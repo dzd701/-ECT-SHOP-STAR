@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECT Shop Star - חנות מכשירים סלולריים</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* עיצוב מותאם אישית */
+        .logo-box { 
+            width: 40px; height: 40px; 
+            background: linear-gradient(135deg, #9333ea 0%, #6b21a8 100%);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+        .logo-box:hover { transform: rotate(15deg); }
+        
+        .product-card {
+            transition: all 0.3s;
+            border: 1px solid #e9d5ff;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(147, 51, 234, 0.2);
+            border-color: #9333ea;
+        }
+        
+        .whatsapp-btn {
+            background: #25D366;
+            transition: all 0.3s;
+        }
+        .whatsapp-btn:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(18, 140, 126, 0.3);
+        }
+        
+        .filter-btn.active {
+            background: #9333ea !important;
+            color: white !important;
+        }
+
+        .product-image-container {
+            height: 250px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-bottom: 1px solid #e9d5ff;
+        }
+
+        .product-image {
+            max-height: 100%;
+            max-width: 100%;
+            height: auto;
+            width: auto;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+        
+        /* Language switcher */
+        .language-switcher {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+        
+        .language-btn {
+            background: #9333ea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .language-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+        
+        .language-dropdown {
+            position: absolute;
+            bottom: 60px;
+            left: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            overflow: hidden;
+            display: none;
+        }
+        
+        .language-dropdown.show {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        
+        .language-option:hover {
+            background: #f3e8ff;
+        }
+        
+        .language-flag {
+            width: 20px;
+            margin-left: 8px;
+        }
+        
+        /* Arabic specific styles */
+        html[lang="ar"] {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* RTL for English and Russian */
+        html[lang="en"], html[lang="ru"] {
+            direction: ltr;
+        }
+        
+        /* LTR adjustments for English/Russian */
+        html[lang="en"] .text-right, 
+        html[lang="ru"] .text-right {
+            text-align: left !important;
+        }
+        
+        html[lang="en"] .text-left,
+        html[lang="ru"] .text-left {
+            text-align: right !important;
+        }
+        
+        html[lang="en"] .flex-row-reverse,
+        html[lang="ru"] .flex-row-reverse {
+            flex-direction: row !important;
+        }
+        
+        html[lang="en"] .space-x-reverse,
+        html[lang="ru"] .space-x-reverse {
+            --tw-space-x-reverse: 0 !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <div class="language-btn" id="languageBtn">
+            <i class="fas fa-globe"></i>
+        </div>
+        <div class="language-dropdown" id="languageDropdown">
+            <div class="language-option" data-lang="he">
+                <span>עברית</span>
+                <img src="https://flagcdn.com/w20/il.png" class="language-flag" alt="Hebrew">
+            </div>
+            <div class="language-option" data-lang="en">
+                <span>English</span>
+                <img src="https://flagcdn.com/w20/gb.png" class="language-flag" alt="English">
+            </div>
+            <div class="language-option" data-lang="ru">
+                <span>Русский</span>
+                <img src="https://flagcdn.com/w20/ru.png" class="language-flag" alt="Russian">
+            </div>
+            <div class="language-option" data-lang="ar">
+                <span>العربية</span>
+                <img src="https://flagcdn.com/w20/sa.png" class="language-flag" alt="Arabic">
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-reverse space-x-2">
+                <div class="logo-box">ECT</div>
+                <div>
+                    <h1 class="text-xl font-bold text-purple-700" data-i18n="header.title">ECT Shop Star</h1>
+                    <p class="text-xs text-gray-500" data-i18n="header.subtitle">חנות מכשירים סלולריים</p>
+                </div>
+            </div>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-reverse space-x-6">
+                    <li><a href="#" class="text-purple-700 font-medium" data-i18n="nav.home">דף הבית</a></li>
+                    <li><a href="#products" class="text-gray-600 hover:text-purple-700 transition" data-i18n="nav.products">מוצרים</a></li>
+                    <li><a href="#contact" class="text-gray-600 hover:text-purple-700 transition" data-i18n="nav.contact">צור קשר</a></li>
+                </ul>
+            </nav>
+            <button class="md:hidden text-gray-600">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-purple-700 to-purple-900 text-white py-12 md:py-20">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-8 md:mb-0 text-center md:text-right">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4" data-i18n="hero.title">המכשירים הסלולריים המתקדמים ביותר</h1>
+                <p class="text-lg mb-6" data-i18n="hero.subtitle">מגוון רחב של מכשירים חדשים ומשומשים במחירים משתלמים</p>
+                <div class="flex justify-center md:justify-start space-x-reverse space-x-4">
+                    <a href="#products" class="bg-white text-purple-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-100 transition" data-i18n="hero.products_button">לקטלוג המוצרים</a>
+                    <a href="https://wa.me/972544455213" class="bg-transparent border-2 border-white px-6 py-2 rounded-lg font-medium hover:bg-white hover:text-purple-700 transition">
+                        <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="hero.whatsapp_button">ווטסאפ</span>
+                    </a>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
+                     alt="Smartphones" 
+                     class="rounded-lg shadow-xl w-full max-w-md">
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8 text-purple-800" data-i18n="products.title">המוצרים שלנו</h2>
+            
+            <!-- Filters -->
+            <div class="mb-8 p-4 bg-gray-100 rounded-lg">
+                <div class="flex flex-wrap justify-center gap-2">
+                    <button class="filter-btn px-4 py-2 bg-purple-600 text-white rounded-lg active" data-filter="all" data-i18n="products.filters.all">הכל</button>
+                    <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg" data-filter="iphone" data-i18n="products.filters.iphone">אייפון</button>
+                    <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg" data-filter="samsung" data-i18n="products.filters.samsung">גלקסי</button>
+                </div>
+            </div>
+            
+            <!-- Products Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                
+                <!-- Apple Products -->
+                <!-- iPhone 13 128GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 13" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 13 128GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.1" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="products.specs.chip">מעבד</span> A15 Bionic</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="products.specs.camera">מצלמה</span> <span data-i18n="products.specs.dual_camera">כפולה</span> 12MP</li>
+                            <li><i class="fas fa-battery-full mr-2 text-purple-600"></i> <span data-i18n="products.specs.battery">סוללה</span>: <span data-i18n="products.specs.up_to">עד</span> 19 <span data-i18n="products.specs.hours_talk">שעות שיחה</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪1,800</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 13 128GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 15 128GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1704380895316-caa2e4d68a7e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 15" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 15 128GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.1" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="products.specs.chip">מעבד</span> A16 Bionic</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="products.specs.camera">מצלמה</span> <span data-i18n="products.specs.improved">משופרת</span> 48MP</li>
+                            <li><i class="fas fa-bolt mr-2 text-purple-600"></i> <span data-i18n="products.specs.usbc">חיבור USB-C</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪2,450</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 15 128GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 15 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1704380895316-caa2e4d68a7e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 15 256GB" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 15 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.1" Super Retina XDR</li>
+                            <li><i class="fas fa-hdd mr-2 text-purple-600"></i> <span data-i18n="products.specs.storage">אחסון</span> 256GB</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="products.specs.camera">מצלמה</span> 48MP</li>
+                            <li><i class="fas fa-battery-full mr-2 text-purple-600"></i> <span data-i18n="products.specs.battery">סוללה</span>: <span data-i18n="products.specs.up_to">עד</span> 20 <span data-i18n="products.specs.hours_talk">שעות שיחה</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪2,699</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 15 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 15 Pro 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1700805732158-6f1169780ca7?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 15 Pro" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 15 Pro 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.1" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="products.specs.chip">מעבד</span> A17 Pro</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="products.specs.triple_camera">מצלמה משולשת עם טלפוטו</span></li>
+                            <li><i class="fas fa-gem mr-2 text-purple-600"></i> <span data-i18n="products.specs.titanium">מסגרת טיטניום</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪3,699</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 15 Pro 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 15 Pro Max 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1709178294946-8d3a697afa63?q=80&w=2126&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 15 Pro Max" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 15 Pro Max 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.7" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="products.specs.chip">מעבד</span> A17 Pro</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="products.specs.telephoto">טלפוטו 5x אופטי</span></li>
+                            <li><i class="fas fa-battery-full mr-2 text-purple-600"></i> <span data-i18n="products.specs.battery">סוללה</span>: <span data-i18n="products.specs.up_to">עד</span> 29 <span data-i18n="products.specs.hours_talk">שעות שיחה</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪4,099</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 15 Pro Max 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 16 128GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1726828537956-61ae115d7d7a?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 16" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 16 128GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.1" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="products.specs.chip">מעבד</span> A18</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="products.specs.improved_camera">מערכת מצלמות משופרת</span></li>
+                            <li><i class="fas fa-magic mr-2 text-purple-600"></i> <span data-i18n="products.specs.new_design">עיצוב חדש עם כפתור פעולה</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪2,699</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 16 128GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 16 Plus 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://www.apple.com/newsroom/images/2024/09/apple-introduces-iphone-16-and-iphone-16-plus/article/geo/Apple-iPhone-16-hero-geo-240909_inline.jpg.large_2x.jpg" alt="iPhone 16 Plus" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 16 Plus 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.7" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="products.specs.chip">מעבד</span> A18</li>
+                            <li><i class="fas fa-battery-full mr-2 text-purple-600"></i> <span data-i18n="products.specs.large_battery">סוללה גדולה במיוחד</span></li>
+                            <li><i class="fas fa-expand mr-2 text-purple-600"></i> <span data-i18n="products.specs.larger_screen">מסך גדול יותר לחווית צפייה</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪4,050</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 16 Plus 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 16 Pro 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://www.apple.com/newsroom/images/2024/09/apple-debuts-iphone-16-pro-and-iphone-16-pro-max/article/Apple-iPhone-16-Pro-hero-geo-240909_inline.jpg.large_2x.jpg" alt="iPhone 16 Pro" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 16 Pro 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.3" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="products.specs.chip">מעבד</span> A18 Pro</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="products.specs.advanced_camera">מערכת מצלמות מתקדמת</span></li>
+                            <li><i class="fas fa-tachometer-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.high_performance">ביצועים גבוהים במיוחד</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪4,250</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 16 Pro 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 16 Pro Max 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1730036900477-09391e7a5414?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 16 Pro Max" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 16 Pro Max 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.9" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="products.specs.chip">מעבד</span> A18 Pro</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="products.specs.improved_telephoto">מצלמת טלפוטו משופרת</span></li>
+                            <li><i class="fas fa-battery-full mr-2 text-purple-600"></i> <span data-i18n="products.specs.battery">סוללה</span>: <span data-i18n="products.specs.up_to">עד</span> 30+ <span data-i18n="products.specs.hours_talk">שעות שיחה</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪4,390</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 16 Pro Max 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 16 Pro Max 512GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1730036900477-09391e7a5414?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 16 Pro Max 512GB" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 16 Pro Max 512GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.9" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="products.specs.chip">מעבד</span> A18 Pro</li>
+                            <li><i class="fas fa-hdd mr-2 text-purple-600"></i> <span data-i18n="products.specs.storage">אחסון</span> <span data-i18n="products.specs.expanded">מוגדל</span> 512GB</li>
+                            <li><i class="fas fa-rocket mr-2 text-purple-600"></i> <span data-i18n="products.specs.leading_performance">ביצועים מובילים במגזר</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪5,399</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 16 Pro Max 512GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Samsung Products -->
+                <!-- Galaxy S24 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="samsung">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1706372124814-417e2f0c3fe0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Galaxy S24" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Galaxy S24 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.2" Dynamic AMOLED 2X</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> Snapdragon 8 Gen 3</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="products.specs.camera">מצלמה</span> 50MP + AI</li>
+                            <li><i class="fas fa-bolt mr-2 text-purple-600"></i> <span data-i18n="products.specs.fast_charging">טעינה מהירה</span> 25W</li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪2,399</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-Galaxy S24 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galaxy S24 Plus 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="samsung">
+                    <div class="product-image-container">
+                        <img src="https://images.samsung.com/is/image/samsung/assets/in/smartphones/galaxy-s24/buy/S24Plus-Color-Cobalt_Violet_PC_0527_final.jpg?imbypass=true" alt="Galaxy S24 Plus" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Galaxy S24 Plus 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.7" Dynamic AMOLED 2X</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> Snapdragon 8 Gen 3</li>
+                            <li><i class="fas fa-battery-full mr-2 text-purple-600"></i> <span data-i18n="products.specs.battery">סוללת</span> 4900mAh</li>
+                            <li><i class="fas fa-tachometer-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.high_performance">ביצועים גבוהים</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪2,799</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-Galaxy S24 Plus 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galaxy S24 Ultra 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="samsung">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1705585175110-d25f92c183aa?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Galaxy S24 Ultra" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Galaxy S24 Ultra 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.8" Dynamic AMOLED 2X</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> Snapdragon 8 Gen 3</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="products.specs.camera">מצלמה</span> 200MP + S Pen</li>
+                            <li><i class="fas fa-gem mr-2 text-purple-600"></i> <span data-i18n="products.specs.titanium">מסגרת טיטניום</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪3,599</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-Galaxy S24 Ultra 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galaxy S24 Ultra 512GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="samsung">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1705585175110-d25f92c183aa?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Galaxy S24 Ultra 512GB" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Galaxy S24 Ultra 512GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.8" Dynamic AMOLED 2X</li>
+                            <li><i class="fas fa-hdd mr-2 text-purple-600"></i> <span data-i18n="products.specs.storage">אחסון</span> 512GB</li>
+                            <li><i class="fas fa-pen mr-2 text-purple-600"></i> S Pen <span data-i18n="products.specs.built_in">מובנה</span></li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="products.specs.camera">מצלמה</span> 200MP + 5x <span data-i18n="products.specs.optical">אופטי</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪4,000</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-Galaxy S24 Ultra 512GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galaxy S25 Ultra 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="samsung">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1738830234395-a351829a1c7b?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Galaxy S25 Ultra" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Galaxy S25 Ultra 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.9" Dynamic AMOLED 2X</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> Snapdragon 8 Gen 4</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="products.specs.advanced_camera">מערכת מצלמות מתקדמת</span></li>
+                            <li><i class="fas fa-bolt mr-2 text-purple-600"></i> <span data-i18n="products.specs.fast_charging">טעינה מהירה</span> 45W</li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪3,950</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-Galaxy S25 Ultra 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galaxy S25 Ultra 512GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="samsung">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1738830234395-a351829a1c7b?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Galaxy S25 Ultra 512GB" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Galaxy S25 Ultra 512GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="products.specs.screen">מסך</span> 6.9" Dynamic AMOLED 2X</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> Snapdragon 8 Gen 4</li>
+                            <li><i class="fas fa-hdd mr-2 text-purple-600"></i> <span data-i18n="products.specs.storage">אחסון</span> 512GB</li>
+                            <li><i class="fas fa-robot mr-2 text-purple-600"></i> AI <span data-i18n="products.specs.advanced">מתקדם</span> <span data-i18n="products.specs.for_photos">לשיפור צילומים</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪4,400</span>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-Galaxy S25 Ultra 512GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="products.details_button">פרטים</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8 text-purple-800" data-i18n="features.title">למה לבחור בנו?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm text-center border border-purple-100">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-tag text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800" data-i18n="features.competitive_prices.title">מחירים תחרותיים</h3>
+                    <p class="text-gray-600" data-i18n="features.competitive_prices.description">מחירים מיוחדים והטבות בלעדיות ללקוחותינו</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm text-center border border-purple-100">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-alt text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800" data-i18n="features.warranty.title">אחריות מורחבת</h3>
+                    <p class="text-gray-600" data-i18n="features.warranty.description">אחריות מלאה לכל המוצרים לתקופה של עד 24 חודשים</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm text-center border border-purple-100">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-headset text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800" data-i18n="features.support.title">תמיכה 24/7</h3>
+                    <p class="text-gray-600" data-i18n="features.support.description">צוות תמיכה זמין בכל עת לפני ואחרי הרכישה</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8 text-purple-800" data-i18n="contact.title">צור קשר</h2>
+            <div class="max-w-2xl mx-auto">
+                <div class="bg-gray-50 rounded-lg shadow-sm p-6 md:p-8">
+                    <div class="text-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">ECT Shop Star</h3>
+                        <p class="text-gray-600 mb-1"><i class="fas fa-phone-alt mr-2 text-purple-600"></i> 054-445-5213</p>
+                        <p class="text-gray-600"><i class="fas fa-envelope mr-2 text-purple-600"></i> ectshopstar@gmail.com</p>
+                    </div>
+                    <form class="space-y-4">
+                        <div>
+                            <label for="name" class="block text-gray-700 mb-2" data-i18n="contact.form.name">שם מלא</label>
+                            <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" data-i18n-placeholder="contact.form.name_placeholder" placeholder="הכנס את שמך">
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-gray-700 mb-2" data-i18n="contact.form.phone">טלפון</label>
+                            <input type="tel" id="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" data-i18n-placeholder="contact.form.phone_placeholder" placeholder="הכנס מספר טלפון">
+                        </div>
+                        <div>
+                            <label for="message" class="block text-gray-700 mb-2" data-i18n="contact.form.message">הודעה</label>
+                            <textarea id="message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" data-i18n-placeholder="contact.form.message_placeholder" placeholder="כתוב את הודעתך כאן"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg font-medium hover:bg-purple-700 transition" data-i18n="contact.form.submit_button">
+                            שלח הודעה
+                        </button>
+                    </form>
+                    <div class="mt-6 text-center">
+                        <p class="text-gray-600 mb-3" data-i18n="contact.or_contact">או צור קשר ישירות:</p>
+                        <div class="flex justify-center space-x-4">
+                            <a href="https://wa.me/972544455213" class="bg-green-500 text-white p-3 rounded-full hover:bg-green-600 transition">
+                                <i class="fab fa-whatsapp text-xl"></i>
+                            </a>
+                            <a href="tel:0544455213" class="bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 transition">
+                                <i class="fas fa-phone-alt text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center">
+                        <div class="logo-box">ECT</div>
+                        <h3 class="text-xl font-bold ml-2">ECT Shop Star</h3>
+                    </div>
+                    <p class="text-gray-400 mt-2" data-i18n="footer.subtitle">חנות המכשירים הסלולריים המובילה בישראל</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-telegram"></i></a>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400">
+                <p data-i18n="footer.copyright">© 2024 ECT Shop Star. כל הזכויות שמורות.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <a href="#" id="back-to-top" class="fixed bottom-6 right-6 bg-purple-600 text-white p-3 rounded-full shadow-lg opacity-0 invisible transition-all">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <script>
+        // Translation dictionary
+        const translations = {
+            he: {
+                // Hebrew translations
+                "header.title": "ECT Shop Star",
+                "header.subtitle": "חנות מכשירים סלולריים",
+                "nav.home": "דף הבית",
+                "nav.products": "מוצרים",
+                "nav.contact": "צור קשר",
+                "hero.title": "המכשירים הסלולריים המתקדמים ביותר",
+                "hero.subtitle": "מגוון רחב של מכשירים חדשים ומשומשים במחירים משתלמים",
+                "hero.products_button": "לקטלוג המוצרים",
+                "hero.whatsapp_button": "ווטסאפ",
+                "products.title": "המוצרים שלנו",
+                "products.filters.all": "הכל",
+                "products.filters.iphone": "אייפון",
+                "products.filters.samsung": "גלקסי",
+                "products.specs.screen": "מסך",
+                "products.specs.chip": "מעבד",
+                "products.specs.camera": "מצלמה",
+                "products.specs.dual_camera": "כפולה",
+                "products.specs.battery": "סוללה",
+                "products.specs.up_to": "עד",
+                "products.specs.hours_talk": "שעות שיחה",
+                "products.specs.usbc": "חיבור USB-C",
+                "products.specs.improved": "משופרת",
+                "products.specs.storage": "אחסון",
+                "products.specs.triple_camera": "מצלמה משולשת עם טלפוטו",
+                "products.specs.titanium": "מסגרת טיטניום",
+                "products.specs.telephoto": "טלפוטו 5x אופטי",
+                "products.specs.improved_camera": "מערכת מצלמות משופרת",
+                "products.specs.new_design": "עיצוב חדש עם כפתור פעולה",
+                "products.specs.large_battery": "סוללה גדולה במיוחד",
+                "products.specs.larger_screen": "מסך גדול יותר לחווית צפייה",
+                "products.specs.high_performance": "ביצועים גבוהים במיוחד",
+                "products.specs.improved_telephoto": "מצלמת טלפוטו משופרת",
+                "products.specs.fast_charging": "טעינה מהירה",
+                "products.specs.built_in": "מובנה",
+                "products.specs.optical": "אופטי",
+                "products.specs.advanced": "מתקדם",
+                "products.specs.for_photos": "לשיפור צילומים",
+                "products.specs.expanded": "מוגדל",
+                "products.specs.leading_performance": "ביצועים מובילים במגזר",
+                "products.specs.advanced_camera": "מערכת מצלמות מתקדמת",
+                "products.details_button": "פרטים",
+                "features.title": "למה לבחור בנו?",
+                "features.competitive_prices.title": "מחירים תחרותיים",
+                "features.competitive_prices.description": "מחירים מיוחדים והטבות בלעדיות ללקוחותינו",
+                "features.warranty.title": "אחריות מורחבת",
+                "features.warranty.description": "אחריות מלאה לכל המוצרים לתקופה של עד 24 חודשים",
+                "features.support.title": "תמיכה 24/7",
+                "features.support.description": "צוות תמיכה זמין בכל עת לפני ואחרי הרכישה",
+                "contact.title": "צור קשר",
+                "contact.form.name": "שם מלא",
+                "contact.form.name_placeholder": "הכנס את שמך",
+                "contact.form.phone": "טלפון",
+                "contact.form.phone_placeholder": "הכנס מספר טלפון",
+                "contact.form.message": "הודעה",
+                "contact.form.message_placeholder": "כתוב את הודעתך כאן",
+                "contact.form.submit_button": "שלח הודעה",
+                "contact.or_contact": "או צור קשר ישירות:",
+                "footer.subtitle": "חנות המכשירים הסלולריים המובילה בישראל",
+                "footer.copyright": "© 2024 ECT Shop Star. כל הזכויות שמורות."
+            },
+            en: {
+                // English translations
+                "header.title": "ECT Shop Star",
+                "header.subtitle": "Mobile Device Store",
+                "nav.home": "Home",
+                "nav.products": "Products",
+                "nav.contact": "Contact",
+                "hero.title": "The Most Advanced Mobile Devices",
+                "hero.subtitle": "Wide range of new and used devices at competitive prices",
+                "hero.products_button": "View Products",
+                "hero.whatsapp_button": "WhatsApp",
+                "products.title": "Our Products",
+                "products.filters.all": "All",
+                "products.filters.iphone": "iPhone",
+                "products.filters.samsung": "Galaxy",
+                "products.specs.screen": "Screen",
+                "products.specs.chip": "Chip",
+                "products.specs.camera": "Camera",
+                "products.specs.dual_camera": "Dual",
+                "products.specs.battery": "Battery",
+                "products.specs.up_to": "Up to",
+                "products.specs.hours_talk": "hours talk time",
+                "products.specs.usbc": "USB-C port",
+                "products.specs.improved": "Improved",
+                "products.specs.storage": "Storage",
+                "products.specs.triple_camera": "Triple camera with telephoto",
+                "products.specs.titanium": "Titanium frame",
+                "products.specs.telephoto": "5x optical telephoto",
+                "products.specs.improved_camera": "Improved camera system",
+                "products.specs.new_design": "New design with action button",
+                "products.specs.large_battery": "Extra large battery",
+                "products.specs.larger_screen": "Larger screen for better viewing",
+                "products.specs.high_performance": "Exceptional high performance",
+                "products.specs.improved_telephoto": "Improved telephoto camera",
+                "products.specs.fast_charging": "Fast charging",
+                "products.specs.built_in": "Built-in",
+                "products.specs.optical": "optical",
+                "products.specs.advanced": "Advanced",
+                "products.specs.for_photos": "for photo enhancement",
+                "products.specs.expanded": "Expanded",
+                "products.specs.leading_performance": "Sector-leading performance",
+                "products.specs.advanced_camera": "Advanced camera system",
+                "products.details_button": "Details",
+                "features.title": "Why Choose Us?",
+                "features.competitive_prices.title": "Competitive Prices",
+                "features.competitive_prices.description": "Special prices and exclusive benefits for our customers",
+                "features.warranty.title": "Extended Warranty",
+                "features.warranty.description": "Full warranty for all products for up to 24 months",
+                "features.support.title": "24/7 Support",
+                "features.support.description": "Support team available anytime before and after purchase",
+                "contact.title": "Contact Us",
+                "contact.form.name": "Full Name",
+                "contact.form.name_placeholder": "Enter your name",
+                "contact.form.phone": "Phone",
+                "contact.form.phone_placeholder": "Enter phone number",
+                "contact.form.message": "Message",
+                "contact.form.message_placeholder": "Write your message here",
+                "contact.form.submit_button": "Send Message",
+                "contact.or_contact": "Or contact us directly:",
+                "footer.subtitle": "Israel's leading mobile device store",
+                "footer.copyright": "© 2024 ECT Shop Star. All rights reserved."
+            },
+            ru: {
+                // Russian translations
+                "header.title": "ECT Shop Star",
+                "header.subtitle": "Магазин мобильных устройств",
+                "nav.home": "Главная",
+                "nav.products": "Товары",
+                "nav.contact": "Контакты",
+                "hero.title": "Самые передовые мобильные устройства",
+                "hero.subtitle": "Широкий выбор новых и б/у устройств по выгодным ценам",
+                "hero.products_button": "Каталог товаров",
+                "hero.whatsapp_button": "WhatsApp",
+                "products.title": "Наши товары",
+                "products.filters.all": "Все",
+                "products.filters.iphone": "iPhone",
+                "products.filters.samsung": "Galaxy",
+                "products.specs.screen": "Экран",
+                "products.specs.chip": "Процессор",
+                "products.specs.camera": "Камера",
+                "products.specs.dual_camera": "Двойная",
+                "products.specs.battery": "Батарея",
+                "products.specs.up_to": "До",
+                "products.specs.hours_talk": "часов разговора",
+                "products.specs.usbc": "Разъем USB-C",
+                "products.specs.improved": "Улучшенная",
+                "products.specs.storage": "Память",
+                "products.specs.triple_camera": "Тройная камера с телеобъективом",
+                "products.specs.titanium": "Титановая рамка",
+                "products.specs.telephoto": "5x оптический телеобъектив",
+                "products.specs.improved_camera": "Улучшенная система камер",
+                "products.specs.new_design": "Новый дизайн с кнопкой действия",
+                "products.specs.large_battery": "Особо большая батарея",
+                "products.specs.larger_screen": "Больший экран для лучшего просмотра",
+                "products.specs.high_performance": "Исключительно высокая производительность",
+                "products.specs.improved_telephoto": "Улучшенная телекамера",
+                "products.specs.fast_charging": "Быстрая зарядка",
+                "products.specs.built_in": "Встроенный",
+                "products.specs.optical": "оптический",
+                "products.specs.advanced": "Продвинутый",
+                "products.specs.for_photos": "для улучшения фото",
+                "products.specs.expanded": "Расширенный",
+                "products.specs.leading_performance": "Лидирующая производительность в секторе",
+                "products.specs.advanced_camera": "Продвинутая система камер",
+                "products.details_button": "Подробности",
+                "features.title": "Почему выбирают нас?",
+                "features.competitive_prices.title": "Конкурентные цены",
+                "features.competitive_prices.description": "Специальные цены и эксклюзивные преимущества для наших клиентов",
+                "features.warranty.title": "Расширенная гарантия",
+                "features.warranty.description": "Полная гарантия на все товары сроком до 24 месяцев",
+                "features.support.title": "Поддержка 24/7",
+                "features.support.description": "Команда поддержки доступна в любое время до и после покупки",
+                "contact.title": "Связаться с нами",
+                "contact.form.name": "Полное имя",
+                "contact.form.name_placeholder": "Введите ваше имя",
+                "contact.form.phone": "Телефон",
+                "contact.form.phone_placeholder": "Введите номер телефона",
+                "contact.form.message": "Сообщение",
+                "contact.form.message_placeholder": "Напишите ваше сообщение здесь",
+                "contact.form.submit_button": "Отправить сообщение",
+                "contact.or_contact": "Или свяжитесь напрямую:",
+                "footer.subtitle": "Ведущий магазин мобильных устройств в Израиле",
+                "footer.copyright": "© 2024 ECT Shop Star. Все права защищены."
+            },
+            ar: {
+                // Arabic translations
+                "header.title": "متجر ECT ستار",
+                "header.subtitle": "متجر أجهزة محمولة",
+                "nav.home": "الصفحة الرئيسية",
+                "nav.products": "المنتجات",
+                "nav.contact": "اتصل بنا",
+                "hero.title": "أكثر الأجهزة المحمولة تطوراً",
+                "hero.subtitle": "مجموعة واسعة من الأجهزة الجديدة والمستعملة بأسعار تنافسية",
+                "hero.products_button": "عرض المنتجات",
+                "hero.whatsapp_button": "واتساب",
+                "products.title": "منتجاتنا",
+                "products.filters.all": "الكل",
+                "products.filters.iphone": "آيفون",
+                "products.filters.samsung": "جالاكسي",
+                "products.specs.screen": "شاشة",
+                "products.specs.chip": "معالج",
+                "products.specs.camera": "كاميرا",
+                "products.specs.dual_camera": "مزدوجة",
+                "products.specs.battery": "بطارية",
+                "products.specs.up_to": "حتى",
+                "products.specs.hours_talk": "ساعة حديث",
+                "products.specs.usbc": "منفذ USB-C",
+                "products.specs.improved": "محسنة",
+                "products.specs.storage": "تخزين",
+                "products.specs.triple_camera": "كاميرا ثلاثية مع تيليفوتو",
+                "products.specs.titanium": "إطار تيتانيوم",
+                "products.specs.telephoto": "تيليفوتو بصري 5x",
+                "products.specs.improved_camera": "نظام كاميرا محسن",
+                "products.specs.new_design": "تصميم جديد مع زر إجراء",
+                "products.specs.large_battery": "بطارية كبيرة جداً",
+                "products.specs.larger_screen": "شاشة أكبر لمشاهدة أفضل",
+                "products.specs.high_performance": "أداء عالي استثنائي",
+                "products.specs.improved_telephoto": "كاميرا تيليفوتو محسنة",
+                "products.specs.fast_charging": "شحن سريع",
+                "products.specs.built_in": "مدمج",
+                "products.specs.optical": "بصري",
+                "products.specs.advanced": "متقدم",
+                "products.specs.for_photos": "لتحسين الصور",
+                "products.specs.expanded": "موسع",
+                "products.specs.leading_performance": "أداء رائد في القطاع",
+                "products.specs.advanced_camera": "نظام كاميرا متقدم",
+                "products.details_button": "تفاصيل",
+                "features.title": "لماذا تختارنا؟",
+                "features.competitive_prices.title": "أسعار تنافسية",
+                "features.competitive_prices.description": "أسعار خاصة ومزايا حصرية لعملائنا",
+                "features.warranty.title": "ضمان ممتد",
+                "features.warranty.description": "ضمان كامل لجميع المنتجات لمدة تصل إلى 24 شهراً",
+                "features.support.title": "دعم على مدار الساعة",
+                "features.support.description": "فريق الدعم متاح في أي وقت قبل وبعد الشراء",
+                "contact.title": "اتصل بنا",
+                "contact.form.name": "الاسم الكامل",
+                "contact.form.name_placeholder": "أدخل اسمك",
+                "contact.form.phone": "هاتف",
+                "contact.form.phone_placeholder": "أدخل رقم الهاتف",
+                "contact.form.message": "رسالة",
+                "contact.form.message_placeholder": "اكتب رسالتك هنا",
+                "contact.form.submit_button": "إرسال الرسالة",
+                "contact.or_contact": "أو اتصل بنا مباشرة:",
+                "footer.subtitle": "متجر الأجهزة المحمولة الرائد في إسرائيل",
+                "footer.copyright": "© 2024 ECT Shop Star. جميع الحقوق محفوظة."
+            }
+        };
+
+        // Language switcher functionality
+        const languageBtn = document.getElementById('languageBtn');
+        const languageDropdown = document.getElementById('languageDropdown');
+        const languageOptions = document.querySelectorAll('.language-option');
+        
+        languageBtn.addEventListener('click', () => {
+            languageDropdown.classList.toggle('show');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!languageBtn.contains(e.target) && !languageDropdown.contains(e.target)) {
+                languageDropdown.classList.remove('show');
+            }
+        });
+        
+        // Change language
+        languageOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const lang = option.dataset.lang;
+                changeLanguage(lang);
+                languageDropdown.classList.remove('show');
+                
+                // Update button icon with flag
+                const flag = option.querySelector('img').cloneNode();
+                languageBtn.innerHTML = '';
+                languageBtn.appendChild(flag);
+            });
+        });
+        
+        // Change language function
+        function changeLanguage(lang) {
+            // Update HTML lang attribute and dir
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' || lang === 'he' ? 'rtl' : 'ltr';
+            
+            // Get all elements with data-i18n attribute
+            const elements = document.querySelectorAll('[data-i18n]');
+            
+            // Update text content
+            elements.forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update placeholder text
+            const placeholders = document.querySelectorAll('[data-i18n-placeholder]');
+            placeholders.forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+            
+            // Store selected language in localStorage
+            localStorage.setItem('selectedLanguage', lang);
+            
+            // Update WhatsApp messages based on language
+            updateWhatsAppMessages(lang);
+        }
+        
+        // Update WhatsApp messages with translated product names
+        function updateWhatsAppMessages(lang) {
+            const whatsappLinks = document.querySelectorAll('a[href^="https://wa.me/"]');
+            
+            whatsappLinks.forEach(link => {
+                const currentHref = link.getAttribute('href');
+                const productMatch = currentHref.match(/text=([^&]*)/);
+                
+                if (productMatch) {
+                    let productText = decodeURIComponent(productMatch[1]);
+                    
+                    // Simple translation mapping for product names
+                    const productTranslations = {
+                        he: {
+                            "אני מעוניין ב-": "אני מעוניין ב-",
+                            "iPhone 13 128GB": "iPhone 13 128GB",
+                            "iPhone 15 128GB": "iPhone 15 128GB",
+                            "iPhone 15 256GB": "iPhone 15 256GB",
+                            "iPhone 15 Pro 256GB": "iPhone 15 Pro 256GB",
+                            "iPhone 15 Pro Max 256GB": "iPhone 15 Pro Max 256GB",
+                            "iPhone 16 128GB": "iPhone 16 128GB",
+                            "iPhone 16 Plus 256GB": "iPhone 16 Plus 256GB",
+                            "iPhone 16 Pro 256GB": "iPhone 16 Pro 256GB",
+                            "iPhone 16 Pro Max 256GB": "iPhone 16 Pro Max 256GB",
+                            "iPhone 16 Pro Max 512GB": "iPhone 16 Pro Max 512GB",
+                            "Galaxy S24 256GB": "Galaxy S24 256GB",
+                            "Galaxy S24 Plus 256GB": "Galaxy S24 Plus 256GB",
+                            "Galaxy S24 Ultra 256GB": "Galaxy S24 Ultra 256GB",
+                            "Galaxy S24 Ultra 512GB": "Galaxy S24 Ultra 512GB",
+                            "Galaxy S25 Ultra 256GB": "Galaxy S25 Ultra 256GB",
+                            "Galaxy S25 Ultra 512GB": "Galaxy S25 Ultra 512GB"
+                        },
+                        en: {
+                            "אני מעוניין ב-": "I'm interested in ",
+                            "iPhone 13 128GB": "iPhone 13 128GB",
+                            "iPhone 15 128GB": "iPhone 15 128GB",
+                            "iPhone 15 256GB": "iPhone 15 256GB",
+                            "iPhone 15 Pro 256GB": "iPhone 15 Pro 256GB",
+                            "iPhone 15 Pro Max 256GB": "iPhone 15 Pro Max 256GB",
+                            "iPhone 16 128GB": "iPhone 16 128GB",
+                            "iPhone 16 Plus 256GB": "iPhone 16 Plus 256GB",
+                            "iPhone 16 Pro 256GB": "iPhone 16 Pro 256GB",
+                            "iPhone 16 Pro Max 256GB": "iPhone 16 Pro Max 256GB",
+                            "iPhone 16 Pro Max 512GB": "iPhone 16 Pro Max 512GB",
+                            "Galaxy S24 256GB": "Galaxy S24 256GB",
+                            "Galaxy S24 Plus 256GB": "Galaxy S24 Plus 256GB",
+                            "Galaxy S24 Ultra 256GB": "Galaxy S24 Ultra 256GB",
+                            "Galaxy S24 Ultra 512GB": "Galaxy S24 Ultra 512GB",
+                            "Galaxy S25 Ultra 256GB": "Galaxy S25 Ultra 256GB",
+                            "Galaxy S25 Ultra 512GB": "Galaxy S25 Ultra 512GB"
+                        },
+                        ru: {
+                            "אני מעוניין ב-": "Я заинтересован в ",
+                            "iPhone 13 128GB": "iPhone 13 128GB",
+                            "iPhone 15 128GB": "iPhone 15 128GB",
+                            "iPhone 15 256GB": "iPhone 15 256GB",
+                            "iPhone 15 Pro 256GB": "iPhone 15 Pro 256GB",
+                            "iPhone 15 Pro Max 256GB": "iPhone 15 Pro Max 256GB",
+                            "iPhone 16 128GB": "iPhone 16 128GB",
+                            "iPhone 16 Plus 256GB": "iPhone 16 Plus 256GB",
+                            "iPhone 16 Pro 256GB": "iPhone 16 Pro 256GB",
+                            "iPhone 16 Pro Max 256GB": "iPhone 16 Pro Max 256GB",
+                            "iPhone 16 Pro Max 512GB": "iPhone 16 Pro Max 512GB",
+                            "Galaxy S24 256GB": "Galaxy S24 256GB",
+                            "Galaxy S24 Plus 256GB": "Galaxy S24 Plus 256GB",
+                            "Galaxy S24 Ultra 256GB": "Galaxy S24 Ultra 256GB",
+                            "Galaxy S24 Ultra 512GB": "Galaxy S24 Ultra 512GB",
+                            "Galaxy S25 Ultra 256GB": "Galaxy S25 Ultra 256GB",
+                            "Galaxy S25 Ultra 512GB": "Galaxy S25 Ultra 512GB"
+                        },
+                        ar: {
+                            "אני מעוניין ב-": "أنا مهتم بـ ",
+                            "iPhone 13 128GB": "iPhone 13 128GB",
+                            "iPhone 15 128GB": "iPhone 15 128GB",
+                            "iPhone 15 256GB": "iPhone 15 256GB",
+                            "iPhone 15 Pro 256GB": "iPhone 15 Pro 256GB",
+                            "iPhone 15 Pro Max 256GB": "iPhone 15 Pro Max 256GB",
+                            "iPhone 16 128GB": "iPhone 16 128GB",
+                            "iPhone 16 Plus 256GB": "iPhone 16 Plus 256GB",
+                            "iPhone 16 Pro 256GB": "iPhone 16 Pro 256GB",
+                            "iPhone 16 Pro Max 256GB": "iPhone 16 Pro Max 256GB",
+                            "iPhone 16 Pro Max 512GB": "iPhone 16 Pro Max 512GB",
+                            "Galaxy S24 256GB": "Galaxy S24 256GB",
+                            "Galaxy S24 Plus 256GB": "Galaxy S24 Plus 256GB",
+                            "Galaxy S24 Ultra 256GB": "Galaxy S24 Ultra 256GB",
+                            "Galaxy S24 Ultra 512GB": "Galaxy S24 Ultra 512GB",
+                            "Galaxy S25 Ultra 256GB": "Galaxy S25 Ultra 256GB",
+                            "Galaxy S25 Ultra 512GB": "Galaxy S25 Ultra 512GB"
+                        }
+                    };
+                    
+                    // Translate the prefix
+                    const prefix = productText.match(/^[^\-]*\-/)?.[0] || "אני מעוניין ב-";
+                    const productName = productText.replace(prefix, '');
+                    
+                    const translatedPrefix = productTranslations[lang]?.[prefix.trim()] || prefix;
+                    const translatedProduct = productTranslations[lang]?.[productName.trim()] || productName;
+                    
+                    const newText = `${translatedPrefix}${translatedProduct}`;
+                    const newHref = currentHref.replace(/text=[^&]*/, `text=${encodeURIComponent(newText)}`);
+                    link.setAttribute('href', newHref);
+                }
+            });
+        }
+        
+        // Check for saved language preference
+        const savedLanguage = localStorage.getItem('selectedLanguage') || 'he';
+        changeLanguage(savedLanguage);
+        
+        // Set initial flag icon
+        const initialFlag = document.querySelector(`.language-option[data-lang="${savedLanguage}"] img`).cloneNode();
+        languageBtn.innerHTML = '';
+        languageBtn.appendChild(initialFlag);
+
+        // Back to Top Button
+        window.addEventListener('scroll', function() {
+            var backToTop = document.getElementById('back-to-top');
+            if (window.pageYOffset > 300) {
+                backToTop.classList.remove('opacity-0', 'invisible');
+                backToTop.classList.add('opacity-100', 'visible');
+            } else {
+                backToTop.classList.remove('opacity-100', 'visible');
+                backToTop.classList.add('opacity-0', 'invisible');
+            }
+        });
+        
+        document.getElementById('back-to-top').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        });
+
+        // Filter Products
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Update active button
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-purple-600', 'text-white'));
+                this.classList.add('active', 'bg-purple-600', 'text-white');
+                
+                // Filter products
+                const filter = this.dataset.filter;
+                document.querySelectorAll('.product-card').forEach(product => {
+                    if (filter === 'all' || product.dataset.brand === filter) {
+                        product.style.display = 'block';
+                    } else {
+                        product.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Mobile Menu Toggle
+        document.querySelector('.md\\:hidden').addEventListener('click', function() {
+            alert('בגרסה המלאה זה יפתח תפריט ניווט למובייל');
+        });
+    </script>
+</body>
+</html>
