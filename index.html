@@ -187,6 +187,19 @@
             padding: 1.5rem;
             margin-bottom: 1rem;
             transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .repair-option::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.05) 0%, rgba(107, 33, 168, 0.05) 100%);
+            z-index: -1;
         }
         
         .repair-option:hover {
@@ -213,6 +226,78 @@
         
         .section.active {
             display: block;
+        }
+        
+        /* Contact form styles */
+        .contact-form {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+        
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-form button {
+            background: #9333ea;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .contact-form button:hover {
+            background: #7e22ce;
+            transform: translateY(-2px);
+        }
+        
+        /* Social media buttons */
+        .social-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .instagram-btn {
+            background: #E1306C;
+        }
+        
+        .instagram-btn:hover {
+            background: #C13584;
+            transform: translateY(-2px);
+        }
+        
+        .tiktok-btn {
+            background: #000000;
+        }
+        
+        .tiktok-btn:hover {
+            background: #333333;
+            transform: translateY(-2px);
+        }
+        
+        .telegram-btn {
+            background: #0088cc;
+        }
+        
+        .telegram-btn:hover {
+            background: #006699;
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -326,6 +411,30 @@
                         לקטלוג מכשירים
                     </a>
                 </div>
+            </div>
+
+            <!-- טופס יצירת קשר -->
+            <div class="contact-form mt-16">
+                <h2 class="text-2xl font-bold text-center mb-6 text-purple-800" data-i18n="contact.title">יצירת קשר</h2>
+                <form id="contactForm">
+                    <div class="mb-4">
+                        <label for="name" class="block text-gray-700 mb-2" data-i18n="contact.name">שם מלא</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="phone" class="block text-gray-700 mb-2" data-i18n="contact.phone">טלפון</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-700 mb-2" data-i18n="contact.email">אימייל</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                    <div class="mb-4">
+                        <label for="message" class="block text-gray-700 mb-2" data-i18n="contact.message">הודעה</label>
+                        <textarea id="message" name="message" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="w-full" data-i18n="contact.submit">שלח הודעה</button>
+                </form>
             </div>
         </div>
     </section>
@@ -810,9 +919,15 @@
                     <p class="text-gray-400 mt-2" data-i18n="footer.subtitle">חנות המכשירים הסלולריים המובילה בישראל</p>
                 </div>
                 <div class="flex space-x-6">
-                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-telegram"></i></a>
+                    <a href="https://www.tiktok.com/@holon_phone_repair" class="social-btn tiktok-btn">
+                        <i class="fab fa-tiktok"></i>
+                    </a>
+                    <a href="https://www.instagram.com/a.a.d_holon/" class="social-btn instagram-btn">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://t.me/0544455213" class="social-btn telegram-btn">
+                        <i class="fab fa-telegram"></i>
+                    </a>
                 </div>
             </div>
             <div class="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400">
@@ -848,6 +963,12 @@
                 "home.devices.title": "מכשירים סלולריים",
                 "home.devices.description": "מכשירים חדשים ומשומשים במצב מעולה עם אחריות",
                 "home.devices.button": "לקטלוג מכשירים",
+                "contact.title": "יצירת קשר",
+                "contact.name": "שם מלא",
+                "contact.phone": "טלפון",
+                "contact.email": "אימייל",
+                "contact.message": "הודעה",
+                "contact.submit": "שלח הודעה",
                 "lab.title": "שירותי מעבדה",
                 "lab.subtitle": "אפשרויות תיקון:",
                 "lab.express.title": "תיקון אקספרס עם מתקין הביתה",
@@ -925,6 +1046,12 @@
                 "home.devices.title": "Mobile Devices",
                 "home.devices.description": "New and used devices in excellent condition with warranty",
                 "home.devices.button": "Devices Catalog",
+                "contact.title": "Contact Us",
+                "contact.name": "Full Name",
+                "contact.phone": "Phone",
+                "contact.email": "Email",
+                "contact.message": "Message",
+                "contact.submit": "Send Message",
                 "lab.title": "Lab Services",
                 "lab.subtitle": "Repair Options:",
                 "lab.express.title": "Express Repair with Home Technician",
@@ -1002,6 +1129,12 @@
                 "home.devices.title": "Мобильные устройства",
                 "home.devices.description": "Новые и б/у устройства в отличном состоянии с гарантией",
                 "home.devices.button": "Каталог устройств",
+                "contact.title": "Свяжитесь с нами",
+                "contact.name": "Полное имя",
+                "contact.phone": "Телефон",
+                "contact.email": "Email",
+                "contact.message": "Сообщение",
+                "contact.submit": "Отправить сообщение",
                 "lab.title": "Услуги лаборатории",
                 "lab.subtitle": "Варианты ремонта:",
                 "lab.express.title": "Экспресс-ремонт с выездом мастера",
@@ -1079,6 +1212,12 @@
                 "home.devices.title": "أجهزة محمولة",
                 "home.devices.description": "أجهزة جديدة ومستعملة بحالة ممتازة مع ضمان",
                 "home.devices.button": "كتالوج الأجهزة",
+                "contact.title": "اتصل بنا",
+                "contact.name": "الاسم الكامل",
+                "contact.phone": "هاتف",
+                "contact.email": "بريد إلكتروني",
+                "contact.message": "رسالة",
+                "contact.submit": "إرسال رسالة",
                 "lab.title": "خدمات المختبر",
                 "lab.subtitle": "خيارات الإصلاح:",
                 "lab.express.title": "إصلاح سريع مع فني منزلي",
@@ -1394,6 +1533,36 @@
         // Mobile menu toggle
         document.getElementById('mobileMenuBtn').addEventListener('click', function() {
             document.getElementById('mobileMenu').classList.toggle('hidden');
+        });
+
+        // Contact form submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            
+            // Create WhatsApp message
+            const whatsappMessage = `הודעה חדשה מלקוח:
+שם: ${name}
+טלפון: ${phone}
+אימייל: ${email}
+הודעה: ${message}`;
+            
+            // Encode message for URL
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+            
+            // Open WhatsApp with the message
+            window.open(`https://wa.me/972544455213?text=${encodedMessage}`, '_blank');
+            
+            // Reset form
+            this.reset();
+            
+            // Show success message (you can customize this)
+            alert('תודה על פנייתך! נחזור אליך בהקדם.');
         });
     </script>
 </body>
