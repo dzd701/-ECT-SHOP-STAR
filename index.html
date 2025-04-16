@@ -1,0 +1,2913 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ECT Shop Star - חנות מכשירים סלולריים</title>
+    
+    <!-- Styles -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="translations.js"></script>
+    <script src="main.js"></script>
+    <script src="cart.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <div class="language-btn" id="languageBtn">
+            <i class="fas fa-globe"></i>
+        </div>
+        <div class="language-dropdown" id="languageDropdown">
+            <div class="language-option" data-lang="he">
+                <span>עברית</span>
+            </div>
+            <div class="language-option" data-lang="en">
+                <span>English</span>
+            </div>
+            <div class="language-option" data-lang="ru">
+                <span>Русский</span>
+            </div>
+            <div class="language-option" data-lang="ar">
+                <span>العربية</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-reverse space-x-2">
+                <div class="logo-box">ECT</div>
+                <div>
+                    <h1 class="text-xl font-bold text-purple-700" data-i18n="header.title">ECT Shop Star</h1>
+                    <p class="text-xs text-gray-500" data-i18n="header.subtitle">חנות מכשירים סלולריים</p>
+                </div>
+            </div>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-reverse space-x-6">
+                    <li>
+                        <div class="flex items-center space-x-reverse space-x-4">
+                            <button onclick="toggleCart()" class="cursor-pointer flex items-center">
+                                <i class="fas fa-shopping-cart text-xl text-purple-700"></i>
+                                <span id="cartCount" class="bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center -mt-3 -mr-2">0</span>
+                            </button>
+                            <a href="#" class="text-purple-700 font-medium nav-link" data-section="home" data-i18n="nav.home">דף הבית</a>
+                        </div>
+                    </li>
+                    <li><a href="#" class="text-gray-600 hover:text-purple-700 transition nav-link" data-section="lab" data-i18n="nav.lab">שירותי מעבדה</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-purple-700 transition nav-link" data-section="accessories" data-i18n="nav.accessories">אביזרים</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-purple-700 transition nav-link" data-section="devices" data-i18n="nav.devices">מכשירים</a></li>
+                </ul>
+            </nav>
+            <button class="md:hidden text-gray-600" id="mobileMenuBtn">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden md:hidden bg-white shadow-lg absolute w-full z-40">
+        <ul class="py-2">
+            <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-purple-50 nav-link" data-section="home" data-i18n="nav.home">דף הבית</a></li>
+            <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-purple-50 nav-link" data-section="lab" data-i18n="nav.lab">שירותי מעבדה</a></li>
+            <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-purple-50 nav-link" data-section="accessories" data-i18n="nav.accessories">אביזרים</a></li>
+            <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-purple-50 nav-link" data-section="devices" data-i18n="nav.devices">מכשירים</a></li>
+        </ul>
+    </div>
+
+    <!-- Cart Notification -->
+    <div id="cart-notification" class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg transform transition-transform duration-300 translate-y-[-100%] opacity-0">
+        <p data-i18n="cart.added">פריט נוסף לסל בהצלחה!</p>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold" data-i18n="cart.title">סל קניות</h2>
+                <button onclick="toggleCart()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="cartItems" class="space-y-4">
+                <!-- Cart items will be inserted here -->
+            </div>
+            
+            <div class="mt-6 pt-4 border-t">
+                <div class="flex justify-between items-center mb-4">
+                    <span id="cartTotal" class="text-lg font-bold">סה״כ: ₪0</span>
+                    <button onclick="checkout()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700">
+                        <span data-i18n="cart.checkout">לקופה</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Form Modal -->
+    <div id="orderModal" class="order-modal">
+        <div class="order-form">
+            <h2>השלמת הזמנה</h2>
+            <form id="orderForm" onsubmit="submitOrder(event)">
+                <div class="form-group">
+                    <label for="fullName">שם מלא</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">מספר טלפון</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">כתובת מייל</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">כתובת למשלוח</label>
+                    <input type="text" id="address" name="address" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>אפשרויות משלוח</label>
+                    <div class="shipping-option" onclick="selectShipping('express')">
+                        <input type="radio" name="shipping" value="express" required>
+                        <strong>משלוח מהיר</strong> - עד 5 ימי עסקים
+                        <div class="text-sm text-gray-600">₪35</div>
+                    </div>
+                    <div class="shipping-option" onclick="selectShipping('regular')">
+                        <input type="radio" name="shipping" value="regular" required>
+                        <strong>משלוח רגיל</strong> - עד 14 ימי עסקים
+                        <div class="text-sm text-gray-600">₪15</div>
+                    </div>
+                </div>
+
+                <div class="order-summary">
+                    <h3 class="font-bold mb-2">סיכום הזמנה</h3>
+                    <div id="orderItems"></div>
+                    <div class="border-t mt-2 pt-2">
+                        <div class="flex justify-between">
+                            <span>סה"כ מוצרים:</span>
+                            <span id="orderSubtotal"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>משלוח:</span>
+                            <span id="shippingCost">₪0</span>
+                        </div>
+                        <div class="flex justify-between font-bold mt-2">
+                            <span>סה"כ לתשלום:</span>
+                            <span id="orderTotal"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg mt-4 hover:bg-purple-700 transition">
+                    שלח הזמנה
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <!-- Home Section -->
+    <section id="home" class="section active py-12 md:py-20">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-purple-800" data-i18n="home.title">ברוכים הבאים ל-ECT Shop Star</h1>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto" data-i18n="home.subtitle">החנות המובילה למכשירים סלולריים, אביזרים ושירותי תיקון מקצועיים</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <!-- מעבדה -->
+                <div class="service-card bg-white rounded-lg overflow-hidden shadow-sm p-6 text-center">
+                    <div class="service-icon">
+                        <i class="fas fa-microscope"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800" data-i18n="home.lab.title">שירותי מעבדה</h3>
+                    <p class="text-gray-600 mb-4 flex-grow" data-i18n="home.lab.description">
+                        תיקון מכשירים סלולריים עם ציוד מתקדם ואחריות על התיקון
+                    </p>
+                    <a href="#" class="mt-auto bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition inline-block nav-link" data-section="lab" data-i18n="home.lab.button">
+                        פרטים נוספים
+                    </a>
+                </div>
+                
+                <!-- אביזרים -->
+                <div class="service-card bg-white rounded-lg overflow-hidden shadow-sm p-6 text-center">
+                    <div class="service-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800" data-i18n="home.accessories.title">אביזרים נלווים</h3>
+                    <p class="text-gray-600 mb-4 flex-grow" data-i18n="home.accessories.description">
+                        מגוון רחב של אביזרים איכותיים למכשירים סלולריים
+                    </p>
+                    <a href="#" class="mt-auto bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition inline-block nav-link" data-section="accessories" data-i18n="home.accessories.button">
+                        לקטלוג אביזרים
+                    </a>
+                </div>
+                
+                <!-- מכשירים -->
+                <div class="service-card bg-white rounded-lg overflow-hidden shadow-sm p-6 text-center">
+                    <div class="service-icon">
+                        <i class="fas fa-mobile"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800" data-i18n="home.devices.title">מכשירים סלולריים</h3>
+                    <p class="text-gray-600 mb-4 flex-grow" data-i18n="home.devices.description">
+                        מכשירים חדשים ומשומשים במצב מעולה עם אחריות
+                    </p>
+                    <a href="#" class="mt-auto bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition inline-block nav-link" data-section="devices" data-i18n="home.devices.button">
+                        לקטלוג מכשירים
+                    </a>
+                </div>
+            </div>
+
+            <!-- טופס יצירת קשר -->
+            <div class="contact-form mt-16">
+                <h2 class="text-2xl font-bold text-center mb-6 text-purple-800" data-i18n="contact.title">יצירת קשר</h2>
+                <form id="contactForm">
+                    <div class="mb-4">
+                        <label for="name" class="block text-gray-700 mb-2" data-i18n="contact.name">שם מלא</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="phone" class="block text-gray-700 mb-2" data-i18n="contact.phone">טלפון</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-700 mb-2" data-i18n="contact.email">אימייל</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                    <div class="mb-4">
+                        <label for="message" class="block text-gray-700 mb-2" data-i18n="contact.message">הודעה</label>
+                        <textarea id="message" name="message" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="w-full" data-i18n="contact.submit">שלח הודעה</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lab Services Section -->
+    <section id="lab" class="section py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8 text-purple-800" data-i18n="lab.title">שירותי מעבדה</h2>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-gray-50 rounded-lg shadow-sm p-6 md:p-8 mb-8">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800" data-i18n="lab.subtitle">אפשרויות תיקון:</h3>
+                    
+                    <!-- תיקון אקספרס עם מתקין הביתה -->
+                    <div class="repair-option">
+                        <h3 data-i18n="lab.express.title">תיקון אקספרס עם מתקין הביתה</h3>
+                        <p data-i18n="lab.express.description">מתקין מקצועי יגיע אליכם הביתה או למשרד לתיקון מהיר במקום</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg" data-i18n="lab.express.price">מחיר: החל מ-₪199</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('express-repair', 'תיקון אקספרס עם מתקין הביתה', 199)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="express">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="lab.express.button">הזמן עכשיו</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- איסוף תיקון והחזרה -->
+                    <div class="repair-option">
+                        <h3 data-i18n="lab.pickup.title">איסוף תיקון והחזרה</h3>
+                        <p data-i18n="lab.pickup.description">ניאסף את המכשיר מכתובתכם, נתקן במעבדה ונחזיר אותו אליכם בתוך 24-48 שעות</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg" data-i18n="lab.pickup.price">מחיר: החל מ-₪149</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('pickup-repair', 'איסוף תיקון והחזרה', 149)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="pickup">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="lab.pickup.button">הזמן עכשיו</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg shadow-sm p-6 md:p-8">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800" data-i18n="lab.services.title">השירותים שלנו:</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-purple-600 mt-1 mr-2"></i>
+                            <span data-i18n="lab.services.1">החלפת מסכים שבורים לכל סוגי המכשירים</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-purple-600 mt-1 mr-2"></i>
+                            <span data-i18n="lab.services.2">החלפת סוללות מקוריות עם אחריות</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-purple-600 mt-1 mr-2"></i>
+                            <span data-i18n="lab.services.3">תיקוני חומרה ולוח אם</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-purple-600 mt-1 mr-2"></i>
+                            <span data-i18n="lab.services.4">שחזור מידע ממכשירים פגומים</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-purple-600 mt-1 mr-2"></i>
+                            <span data-i18n="lab.services.5">תיקוני תוכנה והסרת נעילת רשת</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Accessories Section -->
+    <section id="accessories" class="section py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8 text-purple-800" data-i18n="accessories.title">אביזרים נלווים</h2>
+            
+            <!-- Filters -->
+            <div class="mb-8 p-4 bg-gray-100 rounded-lg">
+                <div class="flex flex-wrap justify-center gap-2">
+                    <button class="filter-btn px-4 py-2 bg-purple-600 text-white rounded-lg active" data-filter="all" data-i18n="accessories.filters.all">הכל</button>
+                    <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg" data-filter="mounts" data-i18n="accessories.filters.mounts">מעמדים</button>
+                    <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg" data-filter="cables" data-i18n="accessories.filters.cables">כבלים</button>
+                    <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg" data-filter="chargers" data-i18n="accessories.filters.chargers">מטענים</button>
+                    <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg" data-filter="headphones" data-i18n="accessories.filters.headphones">אוזניות</button>
+                    <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg" data-filter="powerbanks" data-i18n="accessories.filters.powerbanks">סוללות גיבוי</button>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- XO-51 Bicycle Mount -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="mounts">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="XO-51 Bicycle Mount" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="accessories.products.xo51.title">XO-51 Bicycle Mount</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-i18n="accessories.products.xo51.description">מתקן אופניים ואופנוע</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪32</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('xo51', 'XO-51 Bicycle Mount', 32)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="xo51">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- XO-31 Magnetic Metal Bracket -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="mounts">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="XO-31 Magnetic Metal Bracket" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="accessories.products.xo31.title">XO-31 Magnetic Metal Bracket</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-i18n="accessories.products.xo31.description">מעמד מגנטי מתכתי</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪24</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('xo31', 'XO-31 Magnetic Metal Bracket', 24)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="xo31">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- XO-63 Car Mount -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="mounts">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="XO-63 Car Mount" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="accessories.products.xo63.title">XO-63 Car Mount</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-i18n="accessories.products.xo63.description">מעמד לרכב</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪38</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('xo63', 'XO-63 Car Mount', 38)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="xo63">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- XO-05 Phone Stand -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="mounts">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="XO-05 Phone Stand" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="accessories.products.xo05.title">XO-05 Phone Stand</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-i18n="accessories.products.xo05.description">מעמד שולחני לטלפון</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪35</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('xo05', 'XO-05 Phone Stand', 35)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="xo05">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SH-01 MICRO Cable -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="cables">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="SH-01 MICRO Cable" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="accessories.products.sh01.title">SH-01 MICRO Cable</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-i18n="accessories.products.sh01.description">כבל MICRO USB</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪5</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('sh01', 'SH-01 MICRO Cable', 5)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="sh01">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SH-05 Lightning Cable -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="cables">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="SH-05 Lightning Cable" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="accessories.products.sh05.title">SH-05 Lightning Cable</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-i18n="accessories.products.sh05.description">כבל Lightning</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪6</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('sh05', 'SH-05 Lightning Cable', 6)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="sh05">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SH-08 Type-C Cable -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="cables">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="SH-08 Type-C Cable" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="accessories.products.sh08.title">SH-08 Type-C Cable</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-i18n="accessories.products.sh08.description">כבל Type-C</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪7</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('sh08', 'SH-08 Type-C Cable', 7)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="sh08">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SX-16 Digital Display Cable -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="cables">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="SX-16 Digital Display Cable" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="accessories.products.sx16.title">SX-16 Digital Display Cable</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-i18n="accessories.products.sx16.description">כבל Lightning ל-Type-C עם תצוגה דיגיטלית PD27W</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪26</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('sx16', 'SX-16 Digital Display Cable', 26)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="sx16">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TSK-10 Power Bank -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="powerbanks">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="TSK-10 Power Bank" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="accessories.products.tsk10.title">TSK-10 Power Bank</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-i18n="accessories.products.tsk10.description">סוללת גיבוי 10000mAh</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪50</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('tsk10', 'TSK-10 Power Bank', 50)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="tsk10">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TSK-20 Power Bank -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="powerbanks">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="TSK-20 Power Bank" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="accessories.products.tsk20.title">TSK-20 Power Bank</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-i18n="accessories.products.tsk20.description">סוללת גיבוי 20000mAh</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪83</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('tsk20', 'TSK-20 Power Bank', 83)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="tsk20">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MX1 Earphones -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="MX1 Earphones" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="accessories.products.mx1.title">MX1 Earphones</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-i18n="accessories.products.mx1.description">אוזניות חוטיות 3.5MM</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪11</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('mx1', 'MX1 Earphones', 11)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="mx1">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MX2 Earphones -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="MX2 Earphones" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="accessories.products.mx2.title">MX2 Earphones</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-i18n="accessories.products.mx2.description">אוזניות חוטיות 3.5MM</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪11</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('mx2', 'MX2 Earphones', 11)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="mx2">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MX3 Earphones -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="MX3 Earphones" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="accessories.products.mx3.title">MX3 Earphones</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-i18n="accessories.products.mx3.description">אוזניות חוטיות 3.5MM</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪11</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('mx3', 'MX3 Earphones', 11)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="mx3">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- I8X Lightning Bluetooth Earphones -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="I8X Lightning Bluetooth Earphones" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">I8X Lightning Bluetooth</h3>
+                        <p class="text-gray-600 text-sm mb-4">אוזניות Lightning עם חיבור Bluetooth</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪26</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('i8x', 'I8X Lightning Bluetooth', 26)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="i8x">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- I7s Type-C Earphones -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="I7s Type-C Earphones" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">I7s Type-C</h3>
+                        <p class="text-gray-600 text-sm mb-4">אוזניות Type-C</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪26</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('i7s', 'I7s Type-C', 26)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="i7s">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MC1 Type-C Earphones -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="MC1 Type-C Earphones" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">MC1 Type-C</h3>
+                        <p class="text-gray-600 text-sm mb-4">אוזניות Type-C</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪26</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('mc1', 'MC1 Type-C', 26)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="mc1">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MC2 Type-C Earphones -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="MC2 Type-C Earphones" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">MC2 Type-C</h3>
+                        <p class="text-gray-600 text-sm mb-4">אוזניות Type-C</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪26</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('mc2', 'MC2 Type-C', 26)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="mc2">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MC3 Type-C Metal Earphones -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="MC3 Type-C Metal Earphones" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">MC3 Type-C Metal</h3>
+                        <p class="text-gray-600 text-sm mb-4">אוזניות Type-C מתכתיות</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪26</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('mc3', 'MC3 Type-C Metal', 26)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="mc3">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TX10 Wireless Earphones -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="TX10 Wireless Earphones" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">TX10 Wireless</h3>
+                        <p class="text-gray-600 text-sm mb-4">אוזניות אלחוטיות</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪55</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('tx10', 'TX10 Wireless', 55)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="tx10">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- T200 Button Cell Battery -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="T200 Button Cell Battery" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">T200</h3>
+                        <p class="text-gray-600 text-sm mb-4">אוזניות אלחוטיות עם סוללת כפתור</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪110</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('t200', 'T200 Wireless Earphones', 110)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="t200">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- T350 Button Cell Battery -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="T350 Button Cell Battery" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">T350</h3>
+                        <p class="text-gray-600 text-sm mb-4">אוזניות אלחוטיות עם סוללת כפתור</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪110</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('t350', 'T350 Wireless Earphones', 110)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="t350">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- T450 Button Cell Battery -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="T450 Button Cell Battery" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">T450</h3>
+                        <p class="text-gray-600 text-sm mb-4">אוזניות אלחוטיות עם סוללת כפתור</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪110</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('t450', 'T450 Wireless Earphones', 110)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="t450">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LY-G100 Headphones -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="LY-G100 Headphones" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">LY-G100</h3>
+                        <p class="text-gray-600 text-sm mb-4">אוזניות קשת</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪72</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('lyg100', 'LY-G100 Headphones', 72)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="lyg100">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LY-G300 Headphones -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="headphones">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="LY-G300 Headphones" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">LY-G300</h3>
+                        <p class="text-gray-600 text-sm mb-4">אוזניות קשת</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪99</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('lyg300', 'LY-G300 Headphones', 99)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="lyg300">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CA-5 Car Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="CA-5 Car Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">CA-5 Car Charger</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען רכב שקוף 30W QC+PD</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪28</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('ca5', 'CA-5 Car Charger', 28)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="ca5">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CA-6 Metal Car Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="CA-6 Metal Car Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">CA-6 Metal Car Charger</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען רכב מתכתי 40W PD עם שתי יציאות Type-C</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪42</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('ca6', 'CA-6 Metal Car Charger', 42)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="ca6">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CA-7 Metal Digital Display Car Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="CA-7 Metal Digital Display Car Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">CA-7 Metal Digital Display</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען רכב מתכתי עם תצוגה דיגיטלית PD25W QC3.0 18W</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪38</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('ca7', 'CA-7 Metal Digital Display', 38)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="ca7">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CP-15 Car Bluetooth Player -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="CP-15 Car Bluetooth Player" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">CP-15 Car Bluetooth Player</h3>
+                        <p class="text-gray-600 text-sm mb-4">נגן בלוטות' לרכב PD18W+QC3.018W</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪38</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('cp15', 'CP-15 Car Bluetooth Player', 38)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="cp15">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QC-6EU 15W Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="QC-6EU 15W Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">QC-6EU 15W</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען קיר 15W</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪18</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('qc6eu', 'QC-6EU 15W', 18)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="qc6eu">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QC-6LEU Lightning 15W Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="QC-6LEU Lightning 15W Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">QC-6LEU Lightning</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען קיר Lightning 15W</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪22</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('qc6leu', 'QC-6LEU Lightning', 22)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="qc6leu">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QC-6TEU Type-C 15W Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="QC-6TEU Type-C 15W Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">QC-6TEU Type-C</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען קיר Type-C 15W</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪22</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('qc6teu', 'QC-6TEU Type-C', 22)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="qc6teu">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PD-16-EU PD20W Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="PD-16-EU PD20W Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">PD-16-EU</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען קיר PD20W</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪22</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('pd16eu', 'PD-16-EU', 22)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="pd16eu">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PD-16L-EU PD20W Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="PD-16L-EU PD20W Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">PD-16L-EU</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען קיר PD20W עם כבל</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪32</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('pd16leu', 'PD-16L-EU', 32)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="pd16leu">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PD-16C-EU PD20W Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="PD-16C-EU PD20W Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">PD-16C-EU</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען קיר PD20W עם כבל Type-C</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪32</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('pd16ceu', 'PD-16C-EU', 32)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="pd16ceu">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PD-17-EU PD30W Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="PD-17-EU PD30W Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">PD-17-EU</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען קיר PD30W</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪39</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('pd17eu', 'PD-17-EU', 39)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="pd17eu">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PD-17L-EU PD30W Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="PD-17L-EU PD30W Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">PD-17L-EU</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען קיר PD30W עם כבל Lightning</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪46</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('pd17leu', 'PD-17L-EU', 46)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="pd17leu">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PD-17C-EU PD30W Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="PD-17C-EU PD30W Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">PD-17C-EU</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען קיר PD30W עם כבל Type-C</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪46</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('pd17ceu', 'PD-17C-EU', 46)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="pd17ceu">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRN-2-EU 20W PD+QC Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="GRN-2-EU 20W PD+QC Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">GRN-2-EU</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען קיר 20W PD+QC Full Protocol</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪24</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('grn2eu', 'GRN-2-EU', 24)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="grn2eu">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRN-5-EU GaN 30W PD+QC Charger -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow" data-category="chargers">
+                    <div class="product-image-container h-48">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="GRN-5-EU GaN 30W PD+QC Charger" class="product-image object-cover w-full h-full">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">GRN-5-EU GaN</h3>
+                        <p class="text-gray-600 text-sm mb-4">מטען קיר GaN 30W PD+QC Full Protocol</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪42</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('grn5eu', 'GRN-5-EU GaN', 42)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                                <a href="https://wa.me/972544455213" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center" data-product-id="grn5eu">
+                                    <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="common.details">פרטים</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Devices Section -->
+    <section id="devices" class="section py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8 text-purple-800" data-i18n="devices.title">מכשירים סלולריים</h2>
+            
+            <!-- Filters -->
+            <div class="mb-8 p-4 bg-gray-100 rounded-lg">
+                <div class="flex flex-wrap justify-center gap-2">
+                    <button class="filter-btn px-4 py-2 bg-purple-600 text-white rounded-lg active" data-filter="all" data-i18n="devices.filters.all">הכל</button>
+                    <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg" data-filter="iphone" data-i18n="devices.filters.iphone">אייפון</button>
+                    <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg" data-filter="samsung" data-i18n="devices.filters.samsung">גלקסי</button>
+                </div>
+            </div>
+            
+            <!-- Products Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                
+                <!-- Apple Products -->
+                <!-- iPhone 13 128GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1726574686436-5ef90358e032?q=80&w=1938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 13" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 13 128GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.1" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="devices.specs.chip">מעבד</span> A15 Bionic</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="devices.specs.camera">מצלמה</span> <span data-i18n="devices.specs.dual_camera">כפולה</span> 12MP</li>
+                            <li><i class="fas fa-battery-full mr-2 text-purple-600"></i> <span data-i18n="devices.specs.battery">סוללה</span>: <span data-i18n="devices.specs.up_to">עד</span> 19 <span data-i18n="devices.specs.hours_talk">שעות שיחה</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪1,800</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('iphone13', 'iPhone 13 128GB', 1800)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 13 128GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 15 128GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1704380895316-caa2e4d68a7e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 15" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 15 128GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.1" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="devices.specs.chip">מעבד</span> A16 Bionic</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="devices.specs.camera">מצלמה</span> <span data-i18n="devices.specs.improved">משופרת</span> 48MP</li>
+                            <li><i class="fas fa-bolt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.usbc">חיבור USB-C</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪2,450</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('iphone15', 'iPhone 15 128GB', 2450)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 15 128GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 15 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1704380895316-caa2e4d68a7e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 15 256GB" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 15 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.1" Super Retina XDR</li>
+                            <li><i class="fas fa-hdd mr-2 text-purple-600"></i> <span data-i18n="devices.specs.storage">אחסון</span> 256GB</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="devices.specs.camera">מצלמה</span> 48MP</li>
+                            <li><i class="fas fa-battery-full mr-2 text-purple-600"></i> <span data-i18n="devices.specs.battery">סוללה</span>: <span data-i18n="devices.specs.up_to">עד</span> 20 <span data-i18n="devices.specs.hours_talk">שעות שיחה</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪2,699</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('iphone15-256', 'iPhone 15 256GB', 2699)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 15 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 15 Pro 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1700805732158-6f1169780ca7?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 15 Pro" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 15 Pro 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.1" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="devices.specs.chip">מעבד</span> A17 Pro</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="devices.specs.triple_camera">מצלמה משולשת עם טלפוטו</span></li>
+                            <li><i class="fas fa-gem mr-2 text-purple-600"></i> <span data-i18n="devices.specs.titanium">מסגרת טיטניום</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪3,699</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('iphone15-pro', 'iPhone 15 Pro 256GB', 3699)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 15 Pro 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 15 Pro Max 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1709178294946-8d3a697afa63?q=80&w=2126&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 15 Pro Max" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 15 Pro Max 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.7" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="devices.specs.chip">מעבד</span> A17 Pro</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="devices.specs.telephoto">טלפוטו 5x אופטי</span></li>
+                            <li><i class="fas fa-battery-full mr-2 text-purple-600"></i> <span data-i18n="devices.specs.battery">סוללה</span>: <span data-i18n="devices.specs.up_to">עד</span> 29 <span data-i18n="devices.specs.hours_talk">שעות שיחה</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪4,099</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('iphone15-promax', 'iPhone 15 Pro Max 256GB', 4099)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 15 Pro Max 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 16 128GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1726828537956-61ae115d7d7a?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 16" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 16 128GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.1" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="devices.specs.chip">מעבד</span> A18</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="devices.specs.improved_camera">מערכת מצלמות משופרת</span></li>
+                            <li><i class="fas fa-magic mr-2 text-purple-600"></i> <span data-i18n="devices.specs.new_design">עיצוב חדש עם כפתור פעולה</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪2,699</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('iphone16', 'iPhone 16 128GB', 2699)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 16 128GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 16 Plus 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://www.apple.com/newsroom/images/2024/09/apple-introduces-iphone-16-and-iphone-16-plus/article/geo/Apple-iPhone-16-hero-geo-240909_inline.jpg.large_2x.jpg" alt="iPhone 16 Plus" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 16 Plus 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.7" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="devices.specs.chip">מעבד</span> A18</li>
+                            <li><i class="fas fa-battery-full mr-2 text-purple-600"></i> <span data-i18n="devices.specs.large_battery">סוללה גדולה במיוחד</span></li>
+                            <li><i class="fas fa-expand mr-2 text-purple-600"></i> <span data-i18n="devices.specs.larger_screen">מסך גדול יותר לחווית צפייה</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪4,050</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('iphone16-plus', 'iPhone 16 Plus 256GB', 4050)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 16 Plus 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 16 Pro 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://www.apple.com/newsroom/images/2024/09/apple-debuts-iphone-16-pro-and-iphone-16-pro-max/article/Apple-iPhone-16-Pro-hero-geo-240909_inline.jpg.large_2x.jpg" alt="iPhone 16 Pro" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 16 Pro 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.3" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="devices.specs.chip">מעבד</span> A18 Pro</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="devices.specs.advanced_camera">מערכת מצלמות מתקדמת</span></li>
+                            <li><i class="fas fa-tachometer-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.high_performance">ביצועים גבוהים במיוחד</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪4,250</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('iphone16-pro', 'iPhone 16 Pro 256GB', 4250)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 16 Pro 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 16 Pro Max 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1730036900477-09391e7a5414?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 16 Pro Max" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 16 Pro Max 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.9" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="devices.specs.chip">מעבד</span> A18 Pro</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="devices.specs.improved_telephoto">מצלמת טלפוטו משופרת</span></li>
+                            <li><i class="fas fa-battery-full mr-2 text-purple-600"></i> <span data-i18n="devices.specs.battery">סוללה</span>: <span data-i18n="devices.specs.up_to">עד</span> 30+ <span data-i18n="devices.specs.hours_talk">שעות שיחה</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪4,390</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('iphone16-promax', 'iPhone 16 Pro Max 256GB', 4390)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 16 Pro Max 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iPhone 16 Pro Max 512GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="iphone">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1730036900477-09391e7a5414?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="iPhone 16 Pro Max 512GB" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">iPhone 16 Pro Max 512GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.9" Super Retina XDR</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> <span data-i18n="devices.specs.chip">מעבד</span> A18 Pro</li>
+                            <li><i class="fas fa-hdd mr-2 text-purple-600"></i> <span data-i18n="devices.specs.storage">אחסון</span> <span data-i18n="devices.specs.expanded">מוגדל</span> 512GB</li>
+                            <li><i class="fas fa-rocket mr-2 text-purple-600"></i> <span data-i18n="devices.specs.leading_performance">ביצועים מובילים במגזר</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪5,399</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('iphone16-promax-512', 'iPhone 16 Pro Max 512GB', 5399)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-iPhone 16 Pro Max 512GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Samsung Products -->
+                <!-- Galaxy S24 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="samsung">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1706372124814-417e2f0c3fe0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Galaxy S24" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Galaxy S24 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.2" Dynamic AMOLED 2X</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> Snapdragon 8 Gen 3</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="devices.specs.camera">מצלמה</span> 50MP + AI</li>
+                            <li><i class="fas fa-bolt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.fast_charging">טעינה מהירה</span> 25W</li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪2,399</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('s24', 'Galaxy S24 256GB', 2399)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-Galaxy S24 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galaxy S24 Plus 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="samsung">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1706372124814-417e2f0c3fe0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Galaxy S24 Plus" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Galaxy S24 Plus 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.7" Dynamic AMOLED 2X</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> Snapdragon 8 Gen 3</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="devices.specs.camera">מצלמה</span> 50MP + AI</li>
+                            <li><i class="fas fa-bolt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.fast_charging">טעינה מהירה</span> 45W</li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪2,799</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('s24-plus', 'Galaxy S24 Plus 256GB', 2799)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-Galaxy S24 Plus 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galaxy S24 Ultra 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="samsung">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1706372124814-417e2f0c3fe0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Galaxy S24 Ultra" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Galaxy S24 Ultra 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.8" Dynamic AMOLED 2X</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> Snapdragon 8 Gen 3</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="devices.specs.camera">מצלמה</span> 200MP + AI</li>
+                            <li><i class="fas fa-pen mr-2 text-purple-600"></i> S Pen <span data-i18n="devices.specs.included">כלול</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪3,599</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('s24-ultra', 'Galaxy S24 Ultra 256GB', 3599)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-Galaxy S24 Ultra 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galaxy S24 Ultra 512GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="samsung">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1706372124814-417e2f0c3fe0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Galaxy S24 Ultra 512GB" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Galaxy S24 Ultra 512GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.8" Dynamic AMOLED 2X</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> Snapdragon 8 Gen 3</li>
+                            <li><i class="fas fa-hdd mr-2 text-purple-600"></i> <span data-i18n="devices.specs.storage">אחסון</span> 512GB</li>
+                            <li><i class="fas fa-pen mr-2 text-purple-600"></i> S Pen <span data-i18n="devices.specs.included">כלול</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪4,000</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('s24-ultra-512', 'Galaxy S24 Ultra 512GB', 4000)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-Galaxy S24 Ultra 512GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galaxy S25 Ultra 256GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="samsung">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1738830234395-a351829a1c7b?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Galaxy S25 Ultra" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Galaxy S25 Ultra 256GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.9" Dynamic AMOLED 2X</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> Snapdragon 8 Gen 4</li>
+                            <li><i class="fas fa-camera mr-2 text-purple-600"></i> <span data-i18n="devices.specs.advanced_camera">מערכת מצלמות מתקדמת</span></li>
+                            <li><i class="fas fa-bolt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.fast_charging">טעינה מהירה</span> 45W</li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪3,950</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('s25-ultra', 'Galaxy S25 Ultra 256GB', 3950)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-Galaxy S25 Ultra 256GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galaxy S25 Ultra 512GB -->
+                <div class="product-card rounded-lg overflow-hidden" data-brand="samsung">
+                    <div class="product-image-container">
+                        <img src="https://images.unsplash.com/photo-1738830234395-a351829a1c7b?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Galaxy S25 Ultra 512GB" class="product-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Galaxy S25 Ultra 512GB</h3>
+                        <ul class="text-gray-600 text-sm mb-4 space-y-1">
+                            <li><i class="fas fa-mobile-alt mr-2 text-purple-600"></i> <span data-i18n="devices.specs.screen">מסך</span> 6.9" Dynamic AMOLED 2X</li>
+                            <li><i class="fas fa-microchip mr-2 text-purple-600"></i> Snapdragon 8 Gen 4</li>
+                            <li><i class="fas fa-hdd mr-2 text-purple-600"></i> <span data-i18n="devices.specs.storage">אחסון</span> 512GB</li>
+                            <li><i class="fas fa-robot mr-2 text-purple-600"></i> AI <span data-i18n="devices.specs.advanced">מתקדם</span> <span data-i18n="devices.specs.for_photos">לשיפור צילומים</span></li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-700 font-bold text-lg">₪4,400</span>
+                            <div class="flex gap-2">
+                                <button onclick="addToCart('s25-ultra-512', 'Galaxy S25 Ultra 512GB', 4400)" class="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 transition">
+                                    <i class="fas fa-cart-plus ml-1"></i> <span data-i18n="common.addToCart">הוסף לסל</span>
+                                </button>
+                            <a href="https://wa.me/972544455213?text=אני מעוניין ב-Galaxy S25 Ultra 512GB" class="whatsapp-btn text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fab fa-whatsapp ml-1"></i> <span data-i18n="devices.details_button">פרטים</span>
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center">
+                        <div class="logo-box">ECT</div>
+                        <h3 class="text-xl font-bold ml-2">ECT Shop Star</h3>
+                    </div>
+                    <p class="text-gray-400 mt-2" data-i18n="footer.subtitle">חנות המכשירים הסלולריים המובילה בישראל</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="https://www.tiktok.com/@holon_phone_repair" class="social-btn tiktok-btn">
+                        <i class="fab fa-tiktok"></i>
+                    </a>
+                    <a href="https://www.instagram.com/a.a.d_holon/" class="social-btn instagram-btn">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://t.me/0544455213" class="social-btn telegram-btn">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400">
+                <p data-i18n="footer.copyright">© 2024 ECT Shop Star. כל הזכויות שמורות.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <a href="#" id="back-to-top" class="fixed bottom-6 right-6 bg-purple-600 text-white p-3 rounded-full shadow-lg opacity-0 invisible transition-all">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <!-- Cart Icon -->
+    <div class="fixed top-4 right-4 z-50">
+        <button onclick="toggleCart()" class="bg-purple-600 text-white p-3 rounded-full shadow-lg hover:bg-purple-700 transition-all flex items-center">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cartCount" class="ml-2" data-i18n="cart.items">0 פריטים</span>
+        </button>
+    </div>
+
+    <script>
+        // Language Switcher
+        const languageBtn = document.getElementById('languageBtn');
+        const languageDropdown = document.getElementById('languageDropdown');
+        
+        languageBtn.addEventListener('click', () => {
+            languageDropdown.classList.toggle('show');
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!languageBtn.contains(e.target) && !languageDropdown.contains(e.target)) {
+                languageDropdown.classList.remove('show');
+            }
+        });
+        
+        // Mobile Menu
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Navigation System
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.style.display = 'block';
+                selectedSection.classList.add('active');
+            }
+            
+            // Update navigation active state
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('data-section') === sectionId) {
+                    link.classList.add('text-purple-700', 'font-medium');
+                    link.classList.remove('text-gray-600');
+                } else {
+                    link.classList.remove('text-purple-700', 'font-medium');
+                    link.classList.add('text-gray-600');
+                }
+            });
+
+            // Close mobile menu if open
+            mobileMenu.classList.add('hidden');
+        }
+
+        // Add click handlers to all navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = link.getAttribute('data-section');
+                showSection(section);
+                
+                // Update URL and browser history
+                const url = new URL(window.location);
+                url.hash = section;
+                window.history.pushState({ section: section }, '', url);
+            });
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', (e) => {
+            const section = e.state?.section || 'home';
+            showSection(section);
+        });
+
+        // Initialize correct section on page load
+        function initializePage() {
+            const hash = window.location.hash.slice(1);
+            const section = hash || 'home';
+            showSection(section);
+            if (!hash) {
+                const url = new URL(window.location);
+                url.hash = 'home';
+                window.history.replaceState({ section: 'home' }, '', url);
+            }
+        }
+
+        // Initialize page on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializePage();
+        });
+
+        // Translation dictionary
+        const translations = {
+            he: {
+                // Hebrew translations
+                "header.title": "ECT Shop Star",
+                "header.subtitle": "חנות מכשירים סלולריים",
+                "nav.home": "דף הבית",
+                "nav.lab": "שירותי מעבדה",
+                "nav.accessories": "אביזרים",
+                "nav.devices": "מכשירים",
+                "home.title": "ברוכים הבאים ל-ECT Shop Star",
+                "home.subtitle": "החנות המובילה למכשירים סלולריים, אביזרים ושירותי תיקון מקצועיים",
+                "home.lab.title": "שירותי מעבדה",
+                "home.lab.description": "תיקון מכשירים סלולריים עם ציוד מתקדם ואחריות על התיקון",
+                "home.lab.button": "פרטים נוספים",
+                "home.accessories.title": "אביזרים נלווים",
+                "home.accessories.description": "מגוון רחב של אביזרים איכותיים למכשירים סלולריים",
+                "home.accessories.button": "לקטלוג אביזרים",
+                "home.devices.title": "מכשירים סלולריים",
+                "home.devices.description": "מכשירים חדשים ומשומשים במצב מעולה עם אחריות",
+                "home.devices.button": "לקטלוג מכשירים",
+                "contact.title": "יצירת קשר",
+                "contact.name": "שם מלא",
+                "contact.phone": "טלפון",
+                "contact.email": "אימייל",
+                "contact.message": "הודעה",
+                "contact.submit": "שלח הודעה",
+                "lab.title": "שירותי מעבדה",
+                "lab.subtitle": "אפשרויות תיקון:",
+                "lab.express.title": "תיקון אקספרס עם מתקין הביתה",
+                "lab.express.description": "מתקין מקצועי יגיע אליכם הביתה או למשרד לתיקון מהיר במקום",
+                "lab.express.price": "מחיר: החל מ-₪199",
+                "lab.express.button": "הזמן עכשיו",
+                "lab.pickup.title": "איסוף תיקון והחזרה",
+                "lab.pickup.description": "ניאסף את המכשיר מכתובתכם, נתקן במעבדה ונחזיר אותו אליכם בתוך 24-48 שעות",
+                "lab.pickup.price": "מחיר: החל מ-₪149",
+                "lab.pickup.button": "הזמן עכשיו",
+                "lab.services.title": "השירותים שלנו:",
+                "lab.services.1": "החלפת מסכים שבורים לכל סוגי המכשירים",
+                "lab.services.2": "החלפת סוללות מקוריות עם אחריות",
+                "lab.services.3": "תיקוני חומרה ולוח אם",
+                "lab.services.4": "שחזור מידע ממכשירים פגומים",
+                "lab.services.5": "תיקוני תוכנה והסרת נעילת רשת",
+                "accessories.title": "אביזרים נלווים",
+                "accessories.subtitle": "בקרוב יופיעו כאן כל האביזרים שלנו. ניתן להזמין כבר עכשיו בוואטסאפ!",
+                "accessories.whatsapp_button": "שלח לנו הודעה בוואטסאפ",
+                "accessories.placeholder.1": "מגני מסך",
+                "accessories.placeholder.2": "נרתיקים",
+                "accessories.placeholder.3": "אוזניות",
+                "accessories.placeholder.4": "מטענים",
+                "devices.title": "מכשירים סלולריים",
+                "devices.filters.all": "הכל",
+                "devices.filters.iphone": "אייפון",
+                "devices.filters.samsung": "גלקסי",
+                "devices.specs.screen": "מסך",
+                "devices.specs.chip": "מעבד",
+                "devices.specs.camera": "מצלמה",
+                "devices.specs.dual_camera": "כפולה",
+                "devices.specs.battery": "סוללה",
+                "devices.specs.up_to": "עד",
+                "devices.specs.hours_talk": "שעות שיחה",
+                "devices.specs.usbc": "חיבור USB-C",
+                "devices.specs.improved": "משופרת",
+                "devices.specs.storage": "אחסון",
+                "devices.specs.triple_camera": "מצלמה משולשת עם טלפוטו",
+                "devices.specs.titanium": "מסגרת טיטניום",
+                "devices.specs.telephoto": "טלפוטו 5x אופטי",
+                "devices.specs.improved_camera": "מערכת מצלמות משופרת",
+                "devices.specs.new_design": "עיצוב חדש עם כפתור פעולה",
+                "devices.specs.large_battery": "סוללה גדולה במיוחד",
+                "devices.specs.larger_screen": "מסך גדול יותר לחווית צפייה",
+                "devices.specs.high_performance": "ביצועים גבוהים במיוחד",
+                "devices.specs.improved_telephoto": "מצלמת טלפוטו משופרת",
+                "devices.specs.fast_charging": "טעינה מהירה",
+                "devices.specs.built_in": "מובנה",
+                "devices.specs.optical": "אופטי",
+                "devices.specs.advanced": "מתקדם",
+                "devices.specs.for_photos": "לשיפור צילומים",
+                "devices.specs.expanded": "מוגדל",
+                "devices.specs.leading_performance": "ביצועים מובילים במגזר",
+                "devices.specs.advanced_camera": "מערכת מצלמות מתקדמת",
+                "devices.details_button": "פרטים",
+                "footer.subtitle": "חנות המכשירים הסלולריים המובילה בישראל",
+                "footer.copyright": "© 2024 ECT Shop Star. כל הזכויות שמורות.",
+                "accessories.filters.all": "הכל",
+                "accessories.filters.screen_protectors": "מגני מסך",
+                "accessories.filters.cases": "נרתיקים",
+                "accessories.filters.chargers": "מטענים",
+                "accessories.filters.headphones": "אוזניות",
+                "accessories.filters.powerbanks": "סוללות גיבוי",
+                "common.details": "פרטים",
+                "accessories.products.xo51.title": "XO-51 Bicycle Mount",
+                "accessories.products.xo51.description": "מתקן אופניים ואופנוע",
+                "accessories.products.xo31.title": "XO-31 Magnetic Metal Bracket",
+                "accessories.products.xo31.description": "מעמד מגנטי מתכתי",
+                "accessories.products.xo63.title": "XO-63 Car Mount",
+                "accessories.products.xo63.description": "מעמד לרכב",
+                "accessories.products.xo05.title": "XO-05 Phone Stand",
+                "accessories.products.xo05.description": "מעמד שולחני לטלפון",
+                "accessories.products.sh01.title": "SH-01 MICRO Cable",
+                "accessories.products.sh01.description": "כבל MICRO USB",
+                "accessories.products.sh05.title": "SH-05 Lightning Cable",
+                "accessories.products.sh05.description": "כבל Lightning",
+                "accessories.products.sh08.title": "SH-08 Type-C Cable",
+                "accessories.products.sh08.description": "כבל Type-C",
+                "accessories.products.sx16.title": "SX-16 Digital Display Cable",
+                "accessories.products.sx16.description": "כבל Lightning ל-Type-C עם תצוגה דיגיטלית PD27W",
+                "accessories.products.tsk10.title": "TSK-10 Power Bank",
+                "accessories.products.tsk10.description": "סוללת גיבוי 10000mAh",
+                "accessories.products.tsk20.title": "TSK-20 Power Bank",
+                "accessories.products.tsk20.description": "סוללת גיבוי 20000mAh",
+                "accessories.products.mx1.title": "MX1 Earphones",
+                "accessories.products.mx1.description": "אוזניות חוטיות 3.5MM",
+                "accessories.products.mx2.title": "MX2 Earphones",
+                "accessories.products.mx2.description": "אוזניות חוטיות 3.5MM",
+                "accessories.products.mx3.title": "MX3 Earphones",
+                "accessories.products.mx3.description": "אוזניות חוטיות 3.5MM",
+                "accessories.products.i8x.title": "I8X Lightning Bluetooth Earphones",
+                "accessories.products.i8x.description": "אוזניות בלוטוס Lightning",
+                "accessories.filters.mounts": "מעמדים",
+                "accessories.filters.cables": "כבלים",
+                "accessories.filters.chargers": "מטענים",
+                "accessories.filters.headphones": "אוזניות",
+                "accessories.filters.powerbanks": "סוללות גיבוי",
+                "common.addToCart": "הוסף לסל",
+                "cart.title": "סל קניות",
+                "cart.empty": "הסל שלך ריק",
+                "cart.total": "סה״כ:",
+                "cart.checkout": "לקופה",
+                "cart.remove": "הסר",
+                "cart.items": "פריטים",
+                "cart.item": "פריט",
+                "cart.close": "סגור",
+                "cart.added": "המוצר נוסף לסל"
+            },
+            en: {
+                // English translations
+                "header.title": "ECT Shop Star",
+                "header.subtitle": "Mobile Device Store",
+                "nav.home": "Home",
+                "nav.lab": "Lab Services",
+                "nav.accessories": "Accessories",
+                "nav.devices": "Devices",
+                "home.title": "Welcome to ECT Shop Star",
+                "home.subtitle": "The leading store for mobile devices, accessories and professional repair services",
+                "home.lab.title": "Lab Services",
+                "home.lab.description": "Mobile device repair with advanced equipment and repair warranty",
+                "home.lab.button": "More Details",
+                "home.accessories.title": "Accessories",
+                "home.accessories.description": "Wide range of quality accessories for mobile devices",
+                "home.accessories.button": "Accessories Catalog",
+                "home.devices.title": "Mobile Devices",
+                "home.devices.description": "New and used devices in excellent condition with warranty",
+                "home.devices.button": "Devices Catalog",
+                "contact.title": "Contact Us",
+                "contact.name": "Full Name",
+                "contact.phone": "Phone",
+                "contact.email": "Email",
+                "contact.message": "Message",
+                "contact.submit": "Send Message",
+                "lab.title": "Lab Services",
+                "lab.subtitle": "Repair Options:",
+                "lab.express.title": "Express Repair with Home Technician",
+                "lab.express.description": "A professional technician will come to your home or office for quick on-site repair",
+                "lab.express.price": "Price: From ₪199",
+                "lab.express.button": "Order Now",
+                "lab.pickup.title": "Pickup, Repair and Return",
+                "lab.pickup.description": "We'll pick up the device from your address, repair it in our lab and return it within 24-48 hours",
+                "lab.pickup.price": "Price: From ₪149",
+                "lab.pickup.button": "Order Now",
+                "lab.services.title": "Our Services:",
+                "lab.services.1": "Screen replacement for all device types",
+                "lab.services.2": "Original battery replacement with warranty",
+                "lab.services.3": "Hardware and motherboard repairs",
+                "lab.services.4": "Data recovery from damaged devices",
+                "lab.services.5": "Software fixes and network unlock",
+                "accessories.title": "Accessories",
+                "accessories.subtitle": "All our accessories will appear here soon. You can order now via WhatsApp!",
+                "accessories.whatsapp_button": "Send us a WhatsApp message",
+                "accessories.placeholder.1": "Screen Protectors",
+                "accessories.placeholder.2": "Cases",
+                "accessories.placeholder.3": "Headphones",
+                "accessories.placeholder.4": "Chargers",
+                "devices.title": "Mobile Devices",
+                "devices.filters.all": "All",
+                "devices.filters.iphone": "iPhone",
+                "devices.filters.samsung": "Galaxy",
+                "devices.specs.screen": "Screen",
+                "devices.specs.chip": "Chip",
+                "devices.specs.camera": "Camera",
+                "devices.specs.dual_camera": "Dual",
+                "devices.specs.battery": "Battery",
+                "devices.specs.up_to": "Up to",
+                "devices.specs.hours_talk": "hours talk time",
+                "devices.specs.usbc": "USB-C port",
+                "devices.specs.improved": "Improved",
+                "devices.specs.storage": "Storage",
+                "devices.specs.triple_camera": "Triple camera with telephoto",
+                "devices.specs.titanium": "Titanium frame",
+                "devices.specs.telephoto": "5x optical telephoto",
+                "devices.specs.improved_camera": "Improved camera system",
+                "devices.specs.new_design": "New design with action button",
+                "devices.specs.large_battery": "Extra large battery",
+                "devices.specs.larger_screen": "Larger screen for better viewing",
+                "devices.specs.high_performance": "Exceptional high performance",
+                "devices.specs.improved_telephoto": "Improved telephoto camera",
+                "devices.specs.fast_charging": "Fast charging",
+                "devices.specs.built_in": "Built-in",
+                "devices.specs.optical": "optical",
+                "devices.specs.advanced": "Advanced",
+                "devices.specs.for_photos": "for photo enhancement",
+                "devices.specs.expanded": "Expanded",
+                "devices.specs.leading_performance": "Sector-leading performance",
+                "devices.specs.advanced_camera": "Advanced camera system",
+                "devices.details_button": "Details",
+                "footer.subtitle": "Israel's leading mobile device store",
+                "footer.copyright": "© 2024 ECT Shop Star. All rights reserved.",
+                "accessories.filters.all": "All",
+                "accessories.filters.screen_protectors": "Screen Protectors",
+                "accessories.filters.cases": "Cases",
+                "accessories.filters.chargers": "Chargers",
+                "accessories.filters.headphones": "Headphones",
+                "accessories.filters.powerbanks": "Powerbanks",
+                "accessories.filters.mounts": "Mounts",
+                "accessories.filters.cables": "Cables",
+                "common.addToCart": "Add to Cart",
+                "cart.title": "Shopping Cart",
+                "cart.empty": "Your cart is empty",
+                "cart.total": "Total:",
+                "cart.checkout": "Checkout",
+                "cart.remove": "Remove",
+                "cart.items": "items",
+                "cart.item": "item",
+                "cart.close": "Close",
+                "cart.added": "Item added to cart"
+            },
+            ru: {
+                // Russian translations
+                "header.title": "ECT Shop Star",
+                "header.subtitle": "Магазин мобильных устройств",
+                "nav.home": "Главная",
+                "nav.lab": "Услуги лаборатории",
+                "nav.accessories": "Аксессуары",
+                "nav.devices": "Устройства",
+                "home.title": "Добро пожаловать в ECT Shop Star",
+                "home.subtitle": "Ведущий магазин мобильных устройств, аксессуаров и профессиональных услуг по ремонту",
+                "home.lab.title": "Услуги лаборатории",
+                "home.lab.description": "Ремонт мобильных устройств с современным оборудованием и гарантией на ремонт",
+                "home.lab.button": "Подробнее",
+                "home.accessories.title": "Аксессуары",
+                "home.accessories.description": "Широкий ассортимент качественных аксессуаров для мобильных устройств",
+                "home.accessories.button": "Каталог аксессуаров",
+                "home.devices.title": "Мобильные устройства",
+                "home.devices.description": "Новые и б/у устройства в отличном состоянии с гарантией",
+                "home.devices.button": "Каталог устройств",
+                "contact.title": "Свяжитесь с нами",
+                "contact.name": "Полное имя",
+                "contact.phone": "Телефон",
+                "contact.email": "Email",
+                "contact.message": "Сообщение",
+                "contact.submit": "Отправить сообщение",
+                "lab.title": "Услуги лаборатории",
+                "lab.subtitle": "Варианты ремонта:",
+                "lab.express.title": "Экспресс-ремонт с выездом мастера",
+                "lab.express.description": "Профессиональный мастер приедет к вам домой или в офис для быстрого ремонта на месте",
+                "lab.express.price": "Цена: От ₪199",
+                "lab.express.button": "Заказать сейчас",
+                "lab.pickup.title": "Вывоз, ремонт и возврат",
+                "lab.pickup.description": "Мы заберем устройство с вашего адреса, отремонтируем в лаборатории и вернем в течение 24-48 часов",
+                "lab.pickup.price": "Цена: От ₪149",
+                "lab.pickup.button": "Заказать сейчас",
+                "lab.services.title": "Наши услуги:",
+                "lab.services.1": "Замена разбитых экранов для всех типов устройств",
+                "lab.services.2": "Замена оригинальных аккумуляторов с гарантией",
+                "lab.services.3": "Ремонт аппаратной части и материнских плат",
+                "lab.services.4": "Восстановление данных с поврежденных устройств",
+                "lab.services.5": "Исправление программных ошибок и разблокировка сети",
+                "accessories.title": "Аксессуары",
+                "accessories.subtitle": "Все наши аксессуары скоро появятся здесь. Вы можете заказать сейчас через WhatsApp!",
+                "accessories.whatsapp_button": "Отправить нам сообщение в WhatsApp",
+                "accessories.placeholder.1": "Защитные стекла",
+                "accessories.placeholder.2": "Чехлы",
+                "accessories.placeholder.3": "Наушники",
+                "accessories.placeholder.4": "Зарядные устройства",
+                "devices.title": "Мобильные устройства",
+                "devices.filters.all": "Все",
+                "devices.filters.iphone": "iPhone",
+                "devices.filters.samsung": "Galaxy",
+                "devices.specs.screen": "Экран",
+                "devices.specs.chip": "Процессор",
+                "devices.specs.camera": "Камера",
+                "devices.specs.dual_camera": "Двойная",
+                "devices.specs.battery": "Батарея",
+                "devices.specs.up_to": "До",
+                "devices.specs.hours_talk": "часов разговора",
+                "devices.specs.usbc": "Разъем USB-C",
+                "devices.specs.improved": "Улучшенная",
+                "devices.specs.storage": "Память",
+                "devices.specs.triple_camera": "Тройная камера с телеобъективом",
+                "devices.specs.titanium": "Титановая рамка",
+                "devices.specs.telephoto": "5x оптический телеобъектив",
+                "devices.specs.improved_camera": "Улучшенная система камер",
+                "devices.specs.new_design": "Новый дизайн с кнопкой действия",
+                "devices.specs.large_battery": "Особо большая батарея",
+                "devices.specs.larger_screen": "Больший экран для лучшего просмотра",
+                "devices.specs.high_performance": "Исключительно высокая производительность",
+                "devices.specs.improved_telephoto": "Улучшенная телекамера",
+                "devices.specs.fast_charging": "Быстрая зарядка",
+                "devices.specs.built_in": "Встроенный",
+                "devices.specs.optical": "оптический",
+                "devices.specs.advanced": "Продвинутый",
+                "devices.specs.for_photos": "для улучшения фото",
+                "devices.specs.expanded": "Расширенный",
+                "devices.specs.leading_performance": "Лидирующая производительность в секторе",
+                "devices.specs.advanced_camera": "Продвинутая система камер",
+                "devices.details_button": "Подробности",
+                "footer.subtitle": "Ведущий магазин мобильных устройств в Израиле",
+                "footer.copyright": "© 2024 ECT Shop Star. Все права защищены.",
+                "accessories.filters.all": "Все",
+                "accessories.filters.screen_protectors": "Защитные стекла",
+                "accessories.filters.cases": "Чехлы",
+                "accessories.filters.chargers": "Зарядные устройства",
+                "accessories.filters.headphones": "Наушники",
+                "accessories.filters.powerbanks": "Powerbanks",
+                "accessories.filters.mounts": "Держатели",
+                "accessories.filters.cables": "Кабели",
+                "common.addToCart": "В корзину",
+                "cart.title": "Корзина",
+                "cart.empty": "Корзина пуста",
+                "cart.total": "Итого:",
+                "cart.checkout": "Оформить заказ",
+                "cart.remove": "Удалить",
+                "cart.items": "товаров",
+                "cart.item": "товар",
+                "cart.close": "Закрыть",
+                "cart.added": "Товар добавлен в корзину"
+            },
+            ar: {
+                // Arabic translations
+                "header.title": "متجر ECT ستار",
+                "header.subtitle": "متجر أجهزة محمولة",
+                "nav.home": "الصفحة الرئيسية",
+                "nav.lab": "خدمات المختبر",
+                "nav.accessories": "ملحقات",
+                "nav.devices": "أجهزة",
+                "home.title": "مرحبًا بكم في متجر ECT ستار",
+                "home.subtitle": "المتجر الرائد للأجهزة المحمولة والملحقات وخدمات الإصلاح الاحترافية",
+                "home.lab.title": "خدمات المختبر",
+                "home.lab.description": "إصلاح الأجهزة المحمولة مع معدات متطورة وضمان على الإصلاح",
+                "home.lab.button": "المزيد من التفاصيل",
+                "home.accessories.title": "ملحقات",
+                "home.accessories.description": "مجموعة واسعة من الملحقات عالية الجودة للأجهزة المحمولة",
+                "home.accessories.button": "كتالوج الملحقات",
+                "home.devices.title": "أجهزة محمولة",
+                "home.devices.description": "أجهزة جديدة ومستعملة بحالة ممتازة مع ضمان",
+                "home.devices.button": "كتالوج الأجهزة",
+                "contact.title": "اتصل بنا",
+                "contact.name": "الاسم الكامل",
+                "contact.phone": "هاتف",
+                "contact.email": "بريد إلكتروني",
+                "contact.message": "رسالة",
+                "contact.submit": "إرسال رسالة",
+                "lab.title": "خدمات المختبر",
+                "lab.subtitle": "خيارات الإصلاح:",
+                "lab.express.title": "إصلاح سريع مع فني منزلي",
+                "lab.express.description": "سيأتي فني محترف إلى منزلك أو مكتبك لإصلاح سريع في الموقع",
+                "lab.express.price": "السعر: من ₪199",
+                "lab.express.button": "اطلب الآن",
+                "lab.pickup.title": "استلام وإصلاح وإعادة",
+                "lab.pickup.description": "سنستلم الجهاز من عنوانك، سنصلحه في المختبر وسنعيده إليك خلال 24-48 ساعة",
+                "lab.pickup.price": "السعر: من ₪149",
+                "lab.pickup.button": "اطلب الآن",
+                "lab.services.title": "خدماتنا:",
+                "lab.services.1": "استبدال الشاشات المكسورة لجميع أنواع الأجهزة",
+                "lab.services.2": "استبدال بطاريات أصلية مع ضمان",
+                "lab.services.3": "إصلاحات الأجهزة واللوحات الأم",
+                "lab.services.4": "استعادة البيانات من الأجهزة التالفة",
+                "lab.services.5": "إصلاحات البرامج وإزالة قفل الشبكة",
+                "accessories.title": "ملحقات",
+                "accessories.subtitle": "ستظهر جميع ملحقاتنا هنا قريبًا. يمكنك الطلب الآن عبر واتساب!",
+                "accessories.whatsapp_button": "أرسل لنا رسالة على واتساب",
+                "accessories.placeholder.1": "حماية الشاشة",
+                "accessories.placeholder.2": "أغلفة",
+                "accessories.placeholder.3": "سماعات",
+                "accessories.placeholder.4": "شواحن",
+                "devices.title": "أجهزة محمولة",
+                "devices.filters.all": "الكل",
+                "devices.filters.iphone": "آيفون",
+                "devices.filters.samsung": "جالاكسي",
+                "devices.specs.screen": "شاشة",
+                "devices.specs.chip": "معالج",
+                "devices.specs.camera": "كاميرا",
+                "devices.specs.dual_camera": "مزدوجة",
+                "devices.specs.battery": "بطارية",
+                "devices.specs.up_to": "حتى",
+                "devices.specs.hours_talk": "ساعة حديث",
+                "devices.specs.usbc": "منفذ USB-C",
+                "devices.specs.improved": "محسنة",
+                "devices.specs.storage": "تخزين",
+                "devices.specs.triple_camera": "كاميرا ثلاثية مع تيليفوتو",
+                "devices.specs.titanium": "إطار تيتانيوم",
+                "devices.specs.telephoto": "تيليفوتو 5x אופטי",
+                "devices.specs.improved_camera": "نظام كاميرا محسن",
+                "devices.specs.new_design": "تصميم جديد مع زر إجراء",
+                "devices.specs.large_battery": "بطارية كبيرة جداً",
+                "devices.specs.larger_screen": "شاشة أكبر لمشاهدة أفضل",
+                "devices.specs.high_performance": "أداء عالي استثنائي",
+                "devices.specs.improved_telephoto": "كاميرا تيليفوتو محسنة",
+                "devices.specs.fast_charging": "شحن سريع",
+                "devices.specs.built_in": "مدمج",
+                "devices.specs.optical": "بصري",
+                "devices.specs.advanced": "متقدم",
+                "devices.specs.for_photos": "لتحسين الصور",
+                "devices.specs.expanded": "موسع",
+                "devices.specs.leading_performance": "أداء رائد في القطاع",
+                "devices.specs.advanced_camera": "نظام كاميرا متقدم",
+                "devices.details_button": "تفاصيل",
+                "footer.subtitle": "متجر الأجهزة المحمولة الرائد في إسرائيل",
+                "footer.copyright": "© 2024 ECT Shop Star. جميع الحقوق محفوظة.",
+                "accessories.filters.all": "الكل",
+                "accessories.filters.screen_protectors": "واقي الشاشة",
+                "accessories.filters.cases": "حافظات",
+                "accessories.filters.chargers": "شواحن",
+                "accessories.filters.headphones": "سماعات",
+                "accessories.filters.powerbanks": "Powerbanks",
+                "accessories.filters.mounts": "حوامل",
+                "accessories.filters.cables": "كابلات",
+                "common.addToCart": "أضف إلى السلة",
+                "cart.title": "سلة التسوق",
+                "cart.empty": "سلة التسوق فارغة",
+                "cart.total": "المجموع:",
+                "cart.checkout": "الدفع",
+                "cart.remove": "إزالة",
+                "cart.items": "منتجات",
+                "cart.item": "منتج",
+                "cart.close": "إغلاق",
+                "cart.added": "تمت إضافة المنتج إلى السلة"
+            }
+        };
+
+        // Change language function
+        function changeLanguage(lang) {
+            // Update HTML lang attribute and dir
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' || lang === 'he' ? 'rtl' : 'ltr';
+            
+            // Get all elements with data-i18n attribute
+            const elements = document.querySelectorAll('[data-i18n]');
+            
+            // Update text content
+            elements.forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update placeholder text
+            const placeholders = document.querySelectorAll('[data-i18n-placeholder]');
+            placeholders.forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+
+            // Update WhatsApp messages
+            const whatsappLinks = document.querySelectorAll('.whatsapp-btn');
+            const prefix = {
+                'he': 'אני מעוניין ב-',
+                'en': "I'm interested in ",
+                'ru': 'Я заинтересован в ',
+                'ar': 'أنا مهتم بـ '
+            };
+            
+            whatsappLinks.forEach(link => {
+                const productId = link.getAttribute('data-product-id');
+                if (productId) {
+                    let text;
+                    if (productId === 'express') {
+                        text = translations[lang]['lab.express.title'];
+                    } else if (productId === 'pickup') {
+                        text = translations[lang]['lab.pickup.title'];
+                    } else {
+                        text = translations[lang][`accessories.products.${productId}.title`];
+                    }
+                    const message = `${prefix[lang]}${text}`;
+                    link.href = `https://wa.me/972544455213?text=${encodeURIComponent(message)}`;
+                }
+            });
+            
+            // Store selected language in localStorage
+            localStorage.setItem('selectedLanguage', lang);
+
+            // Update filter buttons active state
+            const activeFilter = document.querySelector('#accessories .filter-btn.active');
+            if (activeFilter) {
+                const filter = activeFilter.getAttribute('data-filter');
+                filterProducts(filter);
+            }
+
+            // Update cart-related text
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            // Update cart modal text
+            const cartTitle = document.querySelector('#cartModal .text-xl');
+            if (cartTitle) {
+                cartTitle.textContent = translations[lang]['cart.title'];
+            }
+
+            const emptyCartText = document.querySelector('#cartModal .empty-cart-text');
+            if (emptyCartText) {
+                emptyCartText.textContent = translations[lang]['cart.empty'];
+            }
+
+            const checkoutButton = document.querySelector('#cartModal .checkout-btn');
+            if (checkoutButton) {
+                checkoutButton.textContent = translations[lang]['cart.checkout'];
+            }
+
+            const closeButton = document.querySelector('#cartModal .close-btn');
+            if (closeButton) {
+                closeButton.textContent = translations[lang]['cart.close'];
+            }
+
+            // Update cart items count text
+            updateCartCount();
+        }
+        
+        // Update WhatsApp messages with translated product names
+        function updateWhatsAppMessages(lang) {
+            const whatsappLinks = document.querySelectorAll('a[href^="https://wa.me/"]');
+            
+            // Accessories filtering
+            document.querySelectorAll('#accessories .filter-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const filter = button.getAttribute('data-filter');
+                    
+                    // Update active button state
+                    document.querySelectorAll('#accessories .filter-btn').forEach(btn => {
+                        if (btn === button) {
+                            btn.classList.remove('bg-gray-200', 'text-gray-700');
+                            btn.classList.add('active', 'bg-purple-600', 'text-white');
+                        } else {
+                            btn.classList.remove('active', 'bg-purple-600', 'text-white');
+                            btn.classList.add('bg-gray-200', 'text-gray-700');
+                        }
+                    });
+
+                    // Filter products
+                    document.querySelectorAll('#accessories .product-card').forEach(product => {
+                        if (filter === 'all' || product.getAttribute('data-category') === filter) {
+                            product.style.display = 'block';
+                        } else {
+                            product.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            whatsappLinks.forEach(link => {
+                const currentHref = link.getAttribute('href');
+                const productMatch = currentHref.match(/text=([^&]*)/);
+                
+                if (productMatch) {
+                    let productText = decodeURIComponent(productMatch[1]);
+                    
+                    // Simple translation mapping for product names
+                    const productTranslations = {
+                        he: {
+                            "אני מעוניין ב-": "אני מעוניין ב-",
+                            "אני מעוניין בשירות תיקון אקספרס עם מתקין הביתה": "אני מעוניין בשירות תיקון אקספרס עם מתקין הביתה",
+                            "אני מעוניין בשירות איסוף תיקון והחזרה": "אני מעוניין בשירות איסוף תיקון והחזרה",
+                            "iPhone 13 128GB": "iPhone 13 128GB",
+                            "iPhone 15 128GB": "iPhone 15 128GB",
+                            "iPhone 15 256GB": "iPhone 15 256GB",
+                            "iPhone 15 Pro 256GB": "iPhone 15 Pro 256GB",
+                            "iPhone 15 Pro Max 256GB": "iPhone 15 Pro Max 256GB",
+                            "iPhone 16 128GB": "iPhone 16 128GB",
+                            "iPhone 16 Plus 256GB": "iPhone 16 Plus 256GB",
+                            "iPhone 16 Pro 256GB": "iPhone 16 Pro 256GB",
+                            "iPhone 16 Pro Max 256GB": "iPhone 16 Pro Max 256GB",
+                            "iPhone 16 Pro Max 512GB": "iPhone 16 Pro Max 512GB",
+                            "Galaxy S24 256GB": "Galaxy S24 256GB",
+                            "Galaxy S24 Plus 256GB": "Galaxy S24 Plus 256GB",
+                            "Galaxy S24 Ultra 256GB": "Galaxy S24 Ultra 256GB",
+                            "Galaxy S24 Ultra 512GB": "Galaxy S24 Ultra 512GB",
+                            "Galaxy S25 Ultra 256GB": "Galaxy S25 Ultra 256GB",
+                            "Galaxy S25 Ultra 512GB": "Galaxy S25 Ultra 512GB"
+                        },
+                        en: {
+                            "אני מעוניין ב-": "I'm interested in ",
+                            "אני מעוניין בשירות תיקון אקספרס עם מתקין הביתה": "I'm interested in express repair with home technician service",
+                            "אני מעוניין בשירות איסוף תיקון והחזרה": "I'm interested in pickup, repair and return service",
+                            "iPhone 13 128GB": "iPhone 13 128GB",
+                            "iPhone 15 128GB": "iPhone 15 128GB",
+                            "iPhone 15 256GB": "iPhone 15 256GB",
+                            "iPhone 15 Pro 256GB": "iPhone 15 Pro 256GB",
+                            "iPhone 15 Pro Max 256GB": "iPhone 15 Pro Max 256GB",
+                            "iPhone 16 128GB": "iPhone 16 128GB",
+                            "iPhone 16 Plus 256GB": "iPhone 16 Plus 256GB",
+                            "iPhone 16 Pro 256GB": "iPhone 16 Pro 256GB",
+                            "iPhone 16 Pro Max 256GB": "iPhone 16 Pro Max 256GB",
+                            "iPhone 16 Pro Max 512GB": "iPhone 16 Pro Max 512GB",
+                            "Galaxy S24 256GB": "Galaxy S24 256GB",
+                            "Galaxy S24 Plus 256GB": "Galaxy S24 Plus 256GB",
+                            "Galaxy S24 Ultra 256GB": "Galaxy S24 Ultra 256GB",
+                            "Galaxy S24 Ultra 512GB": "Galaxy S24 Ultra 512GB",
+                            "Galaxy S25 Ultra 256GB": "Galaxy S25 Ultra 256GB",
+                            "Galaxy S25 Ultra 512GB": "Galaxy S25 Ultra 512GB"
+                        },
+                        ru: {
+                            "אני מעוניין ב-": "Я заинтересован в ",
+                            "אני מעוניין בשירות תיקון אקספרס עם מתקין הביתה": "Я заинтересован в услуге экспресс-ремонта с выездом мастера",
+                            "אני מעוניין בשירות איסוף תיקון והחזרה": "Я заинтересован в услуге вывоза, ремонта и возврата",
+                            "iPhone 13 128GB": "iPhone 13 128GB",
+                            "iPhone 15 128GB": "iPhone 15 128GB",
+                            "iPhone 15 256GB": "iPhone 15 256GB",
+                            "iPhone 15 Pro 256GB": "iPhone 15 Pro 256GB",
+                            "iPhone 15 Pro Max 256GB": "iPhone 15 Pro Max 256GB",
+                            "iPhone 16 128GB": "iPhone 16 128GB",
+                            "iPhone 16 Plus 256GB": "iPhone 16 Plus 256GB",
+                            "iPhone 16 Pro 256GB": "iPhone 16 Pro 256GB",
+                            "iPhone 16 Pro Max 256GB": "iPhone 16 Pro Max 256GB",
+                            "iPhone 16 Pro Max 512GB": "iPhone 16 Pro Max 512GB",
+                            "Galaxy S24 256GB": "Galaxy S24 256GB",
+                            "Galaxy S24 Plus 256GB": "Galaxy S24 Plus 256GB",
+                            "Galaxy S24 Ultra 256GB": "Galaxy S24 Ultra 256GB",
+                            "Galaxy S24 Ultra 512GB": "Galaxy S24 Ultra 512GB",
+                            "Galaxy S25 Ultra 256GB": "Galaxy S25 Ultra 256GB",
+                            "Galaxy S25 Ultra 512GB": "Galaxy S25 Ultra 512GB"
+                        },
+                        ar: {
+                            "אני מעוניין ב-": "أنا مهتم بـ ",
+                            "אני מעוניין בשירות תיקון אקספרס עם מתקין הביתה": "أنا مهتم بخدمة الإصلاح السريع مع فني منزلي",
+                            "אני מעוניין בשירות איסוף תיקון והחזרה": "أنا مهتم بخدمة الاستلام والإصلاح والإعادة",
+                            "iPhone 13 128GB": "iPhone 13 128GB",
+                            "iPhone 15 128GB": "iPhone 15 128GB",
+                            "iPhone 15 256GB": "iPhone 15 256GB",
+                            "iPhone 15 Pro 256GB": "iPhone 15 Pro 256GB",
+                            "iPhone 15 Pro Max 256GB": "iPhone 15 Pro Max 256GB",
+                            "iPhone 16 128GB": "iPhone 16 128GB",
+                            "iPhone 16 Plus 256GB": "iPhone 16 Plus 256GB",
+                            "iPhone 16 Pro 256GB": "iPhone 16 Pro 256GB",
+                            "iPhone 16 Pro Max 256GB": "iPhone 16 Pro Max 256GB",
+                            "iPhone 16 Pro Max 512GB": "iPhone 16 Pro Max 512GB",
+                            "Galaxy S24 256GB": "Galaxy S24 256GB",
+                            "Galaxy S24 Plus 256GB": "Galaxy S24 Plus 256GB",
+                            "Galaxy S24 Ultra 256GB": "Galaxy S24 Ultra 256GB",
+                            "Galaxy S24 Ultra 512GB": "Galaxy S24 Ultra 512GB",
+                            "Galaxy S25 Ultra 256GB": "Galaxy S25 Ultra 256GB",
+                            "Galaxy S25 Ultra 512GB": "Galaxy S25 Ultra 512GB"
+                        }
+                    };
+                    
+                    // Translate the prefix
+                    const prefix = productText.match(/^[^\-]*\-/)?.[0] || "אני מעוניין ב-";
+                    const productName = productText.replace(prefix, '');
+                    
+                    const translatedPrefix = productTranslations[lang]?.[prefix.trim()] || prefix;
+                    const translatedProduct = productTranslations[lang]?.[productName.trim()] || productName;
+                    
+                    const newText = `${translatedPrefix}${translatedProduct}`;
+                    const newHref = currentHref.replace(/text=[^&]*/, `text=${encodeURIComponent(newText)}`);
+                    link.setAttribute('href', newHref);
+                }
+            });
+        }
+        
+        // Check for saved language preference
+        const savedLanguage = localStorage.getItem('selectedLanguage') || 'he';
+        changeLanguage(savedLanguage);
+
+        // Back to Top Button
+        window.addEventListener('scroll', function() {
+            var backToTop = document.getElementById('back-to-top');
+            if (window.pageYOffset > 300) {
+                backToTop.classList.remove('opacity-0', 'invisible');
+                backToTop.classList.add('opacity-100', 'visible');
+            } else {
+                backToTop.classList.remove('opacity-100', 'visible');
+                backToTop.classList.add('opacity-0', 'invisible');
+            }
+        });
+        
+        document.getElementById('back-to-top').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        });
+
+        // Filter Products
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Update active button
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-purple-600', 'text-white'));
+                this.classList.add('active', 'bg-purple-600', 'text-white');
+                
+                // Filter products
+                const filter = this.dataset.filter;
+                document.querySelectorAll('.product-card').forEach(product => {
+                    if (filter === 'all' || product.dataset.brand === filter) {
+                        product.style.display = 'block';
+                    } else {
+                        product.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Add click handlers to language options
+        document.querySelectorAll('.language-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const lang = option.getAttribute('data-lang');
+                changeLanguage(lang);
+                languageDropdown.classList.remove('show');
+            });
+        });
+
+        // Contact form submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            
+            // Create WhatsApp message
+            const whatsappMessage = `הודעה חדשה מלקוח:
+שם: ${name}
+טלפון: ${phone}
+אימייל: ${email}
+הודעה: ${message}`;
+            
+            // Encode message for URL
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+            
+            // Open WhatsApp with the message
+            window.open(`https://wa.me/972544455213?text=${encodedMessage}`, '_blank');
+            
+            // Reset form
+            this.reset();
+            
+            // Show success message (you can customize this)
+            alert('תודה על פנייתך! נחזור אליך בהקדם.');
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Accessories filtering
+            const accessoriesSection = document.getElementById('accessories');
+            const filterButtons = accessoriesSection.querySelectorAll('.filter-btn');
+            const products = accessoriesSection.querySelectorAll('.product-card');
+            
+            console.log('Found filter buttons:', filterButtons.length);
+            console.log('Found products:', products.length);
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filter = button.getAttribute('data-filter');
+                    console.log('Filter clicked:', filter);
+                    
+                    // Update buttons style
+                    filterButtons.forEach(btn => {
+                        if (btn === button) {
+                            btn.classList.remove('bg-gray-200', 'text-gray-700');
+                            btn.classList.add('active', 'bg-purple-600', 'text-white');
+                        } else {
+                            btn.classList.remove('active', 'bg-purple-600', 'text-white');
+                            btn.classList.add('bg-gray-200', 'text-gray-700');
+                        }
+                    });
+                    
+                    // Filter products
+                    products.forEach(product => {
+                        const category = product.getAttribute('data-category');
+                        console.log('Product:', product.querySelector('h3').textContent, 'Category:', category);
+                        
+                        if (filter === 'all' || category === filter) {
+                            product.style.display = 'block';
+                        } else {
+                            product.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Trigger initial filter
+            const defaultFilter = accessoriesSection.querySelector('.filter-btn[data-filter="all"]');
+            if (defaultFilter) {
+                defaultFilter.click();
+            }
+            
+            // Rest of your existing code...
+        });
+
+        // Filter products function
+        function filterProducts(filter) {
+            // Update active button state
+            document.querySelectorAll('#accessories .filter-btn').forEach(btn => {
+                if (btn.getAttribute('data-filter') === filter) {
+                    btn.classList.remove('bg-gray-200', 'text-gray-700');
+                    btn.classList.add('active', 'bg-purple-600', 'text-white');
+                } else {
+                    btn.classList.remove('active', 'bg-purple-600', 'text-white');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                }
+            });
+
+            // Filter products
+            document.querySelectorAll('#accessories .product-card').forEach(product => {
+                if (filter === 'all' || product.getAttribute('data-category') === filter) {
+                    product.style.display = 'block';
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+        }
+
+        // Add event listeners for filter buttons (only once)
+        document.querySelectorAll('#accessories .filter-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const filter = button.getAttribute('data-filter');
+                filterProducts(filter);
+            });
+        });
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const section = this.getAttribute('data-section');
+                showSection(section);
+                
+                // Update URL and browser history
+                const url = new URL(window.location);
+                url.hash = section;
+                window.history.pushState({ section: section }, '', url);
+            });
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function(e) {
+            const section = e.state ? e.state.section : 'home';
+            showSection(section);
+        });
+
+        // Show initial section based on URL hash
+        function initializeSection() {
+            const hash = window.location.hash.slice(1);
+            const section = hash || 'home';
+            showSection(section);
+            if (!hash) {
+                const url = new URL(window.location);
+                url.hash = 'home';
+                window.history.replaceState({ section: 'home' }, '', url);
+            }
+        }
+
+        // Show section function
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => {
+                s.style.display = 'none';
+            });
+            document.getElementById(section).style.display = 'block';
+            
+            // Update navigation active state
+            document.querySelectorAll('.nav-link').forEach(navLink => {
+                if (navLink.getAttribute('data-section') === section) {
+                    navLink.classList.add('text-purple-700', 'font-medium');
+                    navLink.classList.remove('text-gray-600');
+                } else {
+                    navLink.classList.remove('text-purple-700', 'font-medium');
+                    navLink.classList.add('text-gray-600');
+                }
+            });
+        }
+
+        // Initialize section on page load
+        initializeSection();
+
+        // Cart functionality
+        const cartIcon = document.getElementById('cartIcon');
+        const cartModal = document.getElementById('cartModal');
+        const cartOverlay = document.getElementById('cartOverlay');
+        const closeCart = document.getElementById('closeCart');
+        const cartNotification = document.getElementById('cart-notification');
+
+        cartIcon.addEventListener('click', () => {
+            cartModal.classList.add('active');
+            cartOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        function closeCartModal() {
+            cartModal.classList.remove('active');
+            cartOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        closeCart.addEventListener('click', closeCartModal);
+        cartOverlay.addEventListener('click', closeCartModal);
+
+        function showCartNotification() {
+            cartNotification.style.transform = 'translateY(0)';
+            cartNotification.style.opacity = '1';
+            
+            setTimeout(() => {
+                cartNotification.style.transform = 'translateY(-100%)';
+                cartNotification.style.opacity = '0';
+            }, 2000);
+        }
+
+        function calculateCartTotal() {
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+            });
+            return total;
+        }
+
+        function checkout() {
+            if (cart.size === 0) {
+                alert('הסל ריק');
+                return;
+            }
+            
+            const orderModal = document.getElementById('orderModal');
+            const cartModal = document.getElementById('cartModal');
+            const cartOverlay = document.getElementById('cartOverlay');
+            
+            // Update order summary
+            const orderItems = document.getElementById('orderItems');
+            const subtotal = calculateCartTotal();
+            
+            orderItems.innerHTML = Array.from(cart).map(([id, item]) => `
+                <div class="flex justify-between mb-2">
+                    <span>${item.name} x ${item.quantity}</span>
+                    <span>₪${item.price * item.quantity}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('orderSubtotal').textContent = `₪${subtotal}`;
+            document.getElementById('orderTotal').textContent = `₪${subtotal}`;
+            
+            // Hide cart modal and show order modal
+            cartModal.classList.add('hidden');
+            orderModal.classList.add('active');
+            cartOverlay.classList.remove('active');
+        }
+
+        // Update the updateCartCount function to handle translations
+        function updateCartCount() {
+            const cartCount = document.getElementById('cartCount');
+            const itemCount = Object.keys(cart).length;
+            const currentLang = document.documentElement.lang;
+            
+            if (itemCount === 0) {
+                cartCount.textContent = '0';
+            } else {
+                const itemText = itemCount === 1 ? 
+                    translations[currentLang]['cart.item'] : 
+                    translations[currentLang]['cart.items'];
+                cartCount.textContent = `${itemCount} ${itemText}`;
+            }
+        }
+
+        // Update the updateCartModal function to handle translations
+        function updateCartModal() {
+            const cartItemsList = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            const currentLang = document.documentElement.lang;
+            
+            cartItemsList.innerHTML = '';
+            let total = 0;
+
+            if (Object.keys(cart).length === 0) {
+                cartItemsList.innerHTML = `<p class="text-gray-500 text-center py-4 empty-cart-text">${translations[currentLang]['cart.empty']}</p>`;
+            } else {
+                for (const [id, item] of Object.entries(cart)) {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+                    
+                    cartItemsList.innerHTML += `
+                        <div class="flex justify-between items-center p-2 border-b">
+                            <div>
+                                <h4 class="font-semibold">${item.name}</h4>
+                                <p class="text-sm text-gray-600">₪${item.price} x ${item.quantity}</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="font-semibold">₪${itemTotal}</span>
+                                <button onclick="removeFromCart('${id}')" class="text-red-500 hover:text-red-700" data-i18n="cart.remove">${translations[currentLang]['cart.remove']}</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            cartTotal.textContent = `${translations[currentLang]['cart.total']} ₪${total}`;
+        }
+
+        // Initialize EmailJS
+        (function() {
+            emailjs.init("YOUR_PUBLIC_KEY"); // נצטרך להחליף את זה במפתח האמיתי
+        })();
+
+        // Generate Order Number
+        function generateOrderNumber() {
+            const timestamp = Date.now().toString();
+            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `ECT${timestamp.slice(-6)}${random}`;
+        }
+
+        function selectShipping(type) {
+            document.querySelectorAll('.shipping-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            const selectedOption = document.querySelector(`[value="${type}"]`).closest('.shipping-option');
+            selectedOption.classList.add('selected');
+            selectedOption.querySelector('input').checked = true;
+            
+            // Update shipping cost
+            const shippingCost = type === 'express' ? 35 : 15;
+            document.getElementById('shippingCost').textContent = `₪${shippingCost}`;
+            updateOrderTotal();
+        }
+
+        function updateOrderTotal() {
+            const subtotal = parseFloat(document.getElementById('orderSubtotal').textContent.replace('₪', ''));
+            const shipping = parseFloat(document.getElementById('shippingCost').textContent.replace('₪', ''));
+            const total = subtotal + shipping;
+            document.getElementById('orderTotal').textContent = `₪${total}`;
+        }
+
+        async function submitOrder(event) {
+            event.preventDefault();
+            const form = event.target;
+            const orderNumber = generateOrderNumber();
+            
+            const formData = {
+                orderNumber,
+                fullName: form.fullName.value,
+                phone: form.phone.value,
+                email: form.email.value,
+                address: form.address.value,
+                shipping: form.shipping.value,
+                items: Array.from(cart).map(([id, item]) => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                subtotal: parseFloat(document.getElementById('orderSubtotal').textContent.replace('₪', '')),
+                shippingCost: parseFloat(document.getElementById('shippingCost').textContent.replace('₪', '')),
+                total: parseFloat(document.getElementById('orderTotal').textContent.replace('₪', ''))
+            };
+
+            try {
+                // Send email to store
+                await emailjs.send(
+                    "YOUR_SERVICE_ID", // נצטרך להחליף את זה
+                    "YOUR_TEMPLATE_ID", // נצטרך להחליף את זה
+                    {
+                        to_email: "ectshopstar@gmail.com",
+                        order_number: orderNumber,
+                        customer_name: formData.fullName,
+                        customer_phone: formData.phone,
+                        customer_email: formData.email,
+                        customer_address: formData.address,
+                        shipping_method: formData.shipping === 'express' ? 'משלוח מהיר' : 'משלוח רגיל',
+                        order_details: formData.items.map(item => 
+                            `${item.name} x ${item.quantity} - ₪${item.price * item.quantity}`
+                        ).join('\n'),
+                        subtotal: formData.subtotal,
+                        shipping_cost: formData.shippingCost,
+                        total: formData.total
+                    }
+                );
+
+                // Send confirmation email to customer
+                await emailjs.send(
+                    "YOUR_SERVICE_ID", // נצטרך להחליף את זה
+                    "YOUR_TEMPLATE_ID", // נצטרך להחליף את זה
+                    {
+                        to_email: formData.email,
+                        order_number: orderNumber,
+                        customer_name: formData.fullName,
+                        shipping_method: formData.shipping === 'express' ? 'משלוח מהיר' : 'משלוח רגיל',
+                        order_details: formData.items.map(item => 
+                            `${item.name} x ${item.quantity} - ₪${item.price * item.quantity}`
+                        ).join('\n'),
+                        total: formData.total
+                    }
+                );
+
+                // Clear cart and show success message
+                cart.clear();
+                updateCartCount();
+                
+                // Show success message
+                alert(`ההזמנה התקבלה בהצלחה!\nמספר הזמנה: ${orderNumber}`);
+                
+                // Close modal and reset form
+                document.getElementById('orderModal').classList.remove('active');
+                form.reset();
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('אירעה שגיאה בשליחת ההזמנה. אנא נסו שוב מאוחר יותר.');
+            }
+        }
+    </script>
+</body>
+</html>
